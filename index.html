@@ -1,0 +1,958 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080909">
+  <title>Block Academy — Trading Education</title>
+  <meta name="description" content="Practical trading guides and independent market research from Block Academy.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #080909;
+      --panel: #111412;
+      --panel2: #171b18;
+      --white: #fff;
+      --muted: #a0a7a1;
+      --lime: #b5ff45;
+      --border: #292e2a;
+      --font: "Josefin Sans", sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 85px; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--font);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body.modal-open { overflow: hidden; }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .container { width: min(1160px, 90%); margin: auto; }
+    .lime { color: var(--lime); }
+    .muted { color: var(--muted); }
+
+    .eyebrow {
+      color: var(--lime);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 14px 20px;
+      border: 1px solid var(--lime);
+      background: var(--lime);
+      color: #080909;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      transition: .2s;
+    }
+
+    .btn:hover { background: #d0ff89; transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--white); border-color: #444b45; }
+    .btn-outline:hover { background: transparent; color: var(--lime); border-color: var(--lime); }
+    .btn-small { padding: 10px 13px; font-size: 11px; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+    /* Header */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(8,9,9,.94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      min-height: 74px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      white-space: nowrap;
+    }
+
+    .logo span { color: var(--lime); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: #c3c8c3;
+      font-size: 13px;
+    }
+
+    .nav-links a:hover { color: var(--lime); }
+
+    .menu-toggle {
+      display: none;
+      color: var(--white);
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+    }
+
+    /* Hero */
+
+    .hero {
+      min-height: 570px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero:before {
+      content: "";
+      position: absolute;
+      width: 650px;
+      height: 650px;
+      right: -200px;
+      top: -80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(181,255,69,.08), transparent 68%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 50px;
+      align-items: center;
+      padding: 75px 0;
+    }
+
+    h1 {
+      font-size: clamp(44px, 6vw, 75px);
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin: 22px 0;
+    }
+
+    .hero p {
+      max-width: 500px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.9;
+    }
+
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+    .chart-card {
+      border: 1px solid var(--border);
+      padding: 22px;
+      background:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 35px 35px;
+    }
+
+    .chart-top, .chart-bottom {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+
+    .chart-card svg { width: 100%; height: 225px; margin: 24px 0; }
+
+    .chart-bottom { border-top: 1px solid var(--border); padding-top: 14px; }
+
+    /* Sections */
+
+    .ticker { border-bottom: 1px solid var(--border); padding: 17px 0; }
+    .ticker-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
+    .ticker span { font-size: 10px; letter-spacing: 1.6px; color: var(--muted); }
+    .ticker b { color: var(--lime); margin-right: 7px; }
+
+    section.content { padding: 95px 0; border-bottom: 1px solid var(--border); }
+
+    .section-heading { max-width: 680px; margin-bottom: 40px; }
+    .section-heading h2 { font-size: clamp(32px, 4vw, 48px); line-height: 1.2; margin: 15px 0; }
+    .section-heading p { color: var(--muted); font-size: 14px; line-height: 1.9; }
+
+    /* About */
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 65px; }
+    .about-grid h2 { font-size: 40px; line-height: 1.2; margin: 17px 0; }
+    .about-grid p { color: var(--muted); font-size: 14px; line-height: 2; margin-bottom: 14px; }
+
+    .principles { display: grid; gap: 12px; }
+    .principle { display: flex; gap: 17px; padding: 20px; background: var(--panel); border: 1px solid var(--border); }
+    .principle strong { color: var(--lime); font-size: 13px; }
+    .principle h3 { font-size: 15px; margin-bottom: 5px; }
+    .principle p { font-size: 12px; margin: 0; }
+
+    /* Featured guide */
+
+    .product-card { display: grid; grid-template-columns: .8fr 1.2fr; background: var(--panel); border: 1px solid var(--border); }
+    .book-side {
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      padding: 35px;
+      background: radial-gradient(circle, rgba(181,255,69,.10), transparent 65%), #101310;
+    }
+
+    .book {
+      width: min(270px, 100%);
+      aspect-ratio: .72;
+      padding: 25px;
+      background: #090b09;
+      border: 1px solid #444b43;
+      box-shadow: 12px 15px 35px #0008;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book:after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      right: -120px;
+      bottom: -90px;
+      border: 1px solid #b5ff4570;
+      border-radius: 50%;
+      box-shadow: 0 0 0 18px #b5ff4508, 0 0 0 36px #b5ff4505;
+    }
+
+    .book-brand { font-size: 10px; font-weight: 700; letter-spacing: 2px; }
+    .book-title { font-size: 27px; line-height: 1.2; font-weight: 700; position: relative; z-index: 1; }
+    .book-foot { color: var(--muted); font-size: 9px; letter-spacing: 1.4px; }
+
+    .product-info { padding: 48px; display: flex; flex-direction: column; justify-content: center; }
+    .product-info h3 { font-size: clamp(27px, 3vw, 38px); line-height: 1.2; margin: 16px 0; }
+    .product-info p { color: var(--muted); font-size: 14px; line-height: 1.9; }
+    .product-tags { display: flex; flex-wrap: wrap; gap: 18px; margin: 24px 0; font-size: 12px; color: #c1c7c1; }
+    .product-tags span:before { content: "✓"; color: var(--lime); margin-right: 7px; }
+    .price { font-size: 32px; font-weight: 700; margin-bottom: 20px; }
+    .price small { color: var(--muted); font-size: 11px; font-weight: 400; }
+    .product-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    /* Preview */
+
+    .preview-shell { background: var(--panel); border: 1px solid var(--border); padding: 22px; }
+    .preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+    .preview-toolbar span { color: var(--muted); font-size: 12px; }
+    .preview-controls { display: flex; gap: 8px; }
+
+    .preview-page {
+      min-height: 430px;
+      max-width: 690px;
+      margin: auto;
+      padding: 42px;
+      background: #f2f2ec;
+      color: #141614;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .preview-page small { color: #6b7169; font-size: 9px; letter-spacing: 1.5px; }
+    .preview-page h3 { font-size: clamp(25px, 4vw, 40px); line-height: 1.2; margin: 20px 0; }
+    .preview-page p { color: #555c54; font-size: 13px; line-height: 1.9; max-width: 500px; }
+    .preview-page .page-bottom { display: flex; justify-content: space-between; font-size: 10px; color: #6b7169; border-top: 1px solid #c9ccc5; padding-top: 12px; }
+    .preview-note { color: var(--muted); font-size: 11px; margin-top: 14px; }
+
+    /* Reviews */
+
+    .reviews-box { border: 1px solid var(--border); background: var(--panel); text-align: center; padding: 42px 20px; }
+    .stars { color: var(--lime); letter-spacing: 5px; font-size: 24px; }
+    .reviews-box h3 { font-size: 24px; margin: 12px 0; }
+    .reviews-box p { color: var(--muted); font-size: 13px; }
+
+    /* CTA and footer */
+
+    .final-cta { padding: 90px 0; text-align: center; background: radial-gradient(ellipse at center, #b5ff450c, transparent 65%); }
+    .final-cta h2 { font-size: clamp(35px, 5vw, 55px); line-height: 1.2; margin: 18px auto; }
+    .final-cta p { color: var(--muted); max-width: 550px; margin: 0 auto 25px; font-size: 14px; }
+
+    footer { border-top: 1px solid var(--border); padding: 35px 0; }
+    .footer-top, .footer-bottom { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 12px; color: var(--muted); }
+    .footer-links a:hover { color: var(--lime); }
+    .footer-bottom { border-top: 1px solid var(--border); margin-top: 22px; padding-top: 20px; color: #777f78; font-size: 11px; }
+    .disclaimer { max-width: 700px; line-height: 1.8; }
+
+    /* Modal and checkout */
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: #000b;
+      padding: 20px;
+      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(520px, 100%);
+      background: #101310;
+      border: 1px solid #3a403a;
+      padding: 28px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 22px; }
+    .modal-header h2 { font-size: 24px; }
+    .close-modal { background: transparent; color: white; border: 1px solid var(--border); padding: 7px 11px; }
+    .modal-card label { display: block; font-size: 12px; color: #c4cbc4; margin: 15px 0 7px; }
+    .modal-card input, .modal-card select {
+      width: 100%;
+      padding: 13px;
+      background: #080909;
+      border: 1px solid #3a403a;
+      color: white;
+      outline: none;
+    }
+
+    .modal-card input:focus, .modal-card select:focus { border-color: var(--lime); }
+    .modal-card .btn { width: 100%; margin-top: 18px; }
+    .modal-copy { color: var(--muted); font-size: 12px; line-height: 1.8; margin: 10px 0; }
+    .payment-address { padding: 13px; border: 1px dashed #56604f; background: #080909; color: var(--lime); font-size: 12px; word-break: break-all; margin: 12px 0; }
+    .timer { color: var(--lime); font-size: 24px; font-weight: 700; margin: 10px 0; }
+    .step-indicator { color: var(--muted); font-size: 10px; letter-spacing: 1.5px; margin-bottom: 9px; }
+    .status-panel { background: #080909; border: 1px solid var(--border); padding: 18px; margin-top: 14px; }
+    .status-label { color: var(--lime); font-size: 11px; letter-spacing: 1.4px; font-weight: 700; }
+    .status-panel p { color: var(--muted); font-size: 12px; line-height: 1.8; margin-top: 8px; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 800px) {
+      .hero-grid, .about-grid, .product-card { grid-template-columns: 1fr; }
+      .hero-grid { gap: 35px; }
+      .product-info { padding: 30px; }
+      .book-side { min-height: 370px; }
+      .nav-links { gap: 15px; }
+    }
+
+    @media (max-width: 560px) {
+      .nav { min-height: 66px; }
+      .logo { font-size: 18px; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 66px;
+        left: 0;
+        right: 0;
+        padding: 20px 5%;
+        background: #080909;
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav-links.show { display: flex; }
+      .menu-toggle { display: block; }
+      .nav .nav-cta { display: none; }
+      .hero-grid { padding: 55px 0; }
+      h1 { letter-spacing: -1px; }
+      section.content { padding: 70px 0; }
+      .ticker-row { display: grid; grid-template-columns: 1fr 1fr; }
+      .preview-page { min-height: 390px; padding: 25px; }
+      .modal-card { padding: 22px; }
+      .footer-top, .footer-bottom { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="container nav">
+    <a class="logo" href="#">BLOCK <span>ACADEMY</span></a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#about">About</a>
+      <a href="#guides">Guides</a>
+      <a href="#preview">Preview</a>
+      <a href="#reviews">Reviews</a>
+    </nav>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation">☰</button>
+    <a href="#guides" class="btn btn-small nav-cta">EXPLORE GUIDES ↗</a>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">Independent Trading Education</div>
+        <h1>Knowledge is<br>your <span class="lime">edge.</span></h1>
+        <p>
+          Practical trading guides and independent market research for
+          people who want to understand the mechanics behind the markets
+          they trade.
+        </p>
+        <div class="hero-actions">
+          <a href="#guides" class="btn">EXPLORE PUBLICATIONS ↗</a>
+          <a href="#about" class="btn btn-outline">OUR APPROACH</a>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-top">
+          <span>MARKET ANALYSIS / 001</span>
+          <span class="lime">BLOCK ACADEMY</span>
+        </div>
+
+        <svg viewBox="0 0 440 220" fill="none" aria-label="Decorative market chart">
+          <defs>
+            <linearGradient id="chartFill" x1="220" y1="0" x2="220" y2="220">
+              <stop stop-color="#B5FF45" stop-opacity=".22"/>
+              <stop offset="1" stop-color="#B5FF45" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M0 180 L45 155 L80 165 L125 110 L165 130 L205 85 L250 105 L290 55 L335 78 L380 28 L440 12 L440 220 L0 220 Z" fill="url(#chartFill)"/>
+          <path d="M0 180 L45 155 L80 165 L125 110 L165 130 L205 85 L250 105 L290 55 L335 78 L380 28 L440 12" stroke="#B5FF45" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M0 205 H440 M0 145 H440 M0 85 H440" stroke="#555B55" stroke-dasharray="4 6" opacity=".5"/>
+          <circle cx="380" cy="28" r="5" fill="#B5FF45"/>
+          <circle cx="380" cy="28" r="11" stroke="#B5FF45" opacity=".35"/>
+        </svg>
+
+        <div class="chart-bottom">
+          <span>RESEARCH-DRIVEN</span>
+          <span>DATA · STRATEGY · DISCIPLINE</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker">
+    <div class="container ticker-row">
+      <span><b>✳</b> Practical Knowledge</span>
+      <span><b>✳</b> Independent Research</span>
+      <span><b>✳</b> Market Education</span>
+      <span><b>✳</b> Digital Publications</span>
+    </div>
+  </div>
+
+  <section class="content" id="about">
+    <div class="container about-grid">
+      <div>
+        <div class="eyebrow">About Block Academy</div>
+        <h2>Learn the market.<br>Think <span class="lime">independently.</span></h2>
+        <p>
+          Block Academy is an independent educational publication focused
+          on trading, cryptocurrency, prediction markets and financial research.
+        </p>
+        <p>
+          We explain complex market concepts through structured guides,
+          practical examples and research-based explanations.
+        </p>
+        <p>
+          Our approach is built around preparation, knowledge and disciplined
+          decision-making—not promises of profit.
+        </p>
+      </div>
+
+      <div class="principles">
+        <div class="principle">
+          <strong>01</strong>
+          <div><h3>Research First</h3><p>Understand the underlying data before making a trading decision.</p></div>
+        </div>
+        <div class="principle">
+          <strong>02</strong>
+          <div><h3>Practical Education</h3><p>Learn through examples, explanations and structured strategies.</p></div>
+        </div>
+        <div class="principle">
+          <strong>03</strong>
+          <div><h3>Risk Awareness</h3><p>Understand uncertainty, costs and risk before entering a market.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content" id="guides">
+    <div class="container">
+      <div class="section-heading">
+        <div class="eyebrow">Our Publications</div>
+        <h2>Knowledge worth <span class="lime">studying.</span></h2>
+        <p>Explore practical digital publications created to help readers understand trading concepts and market strategies.</p>
+      </div>
+
+      <article class="product-card">
+        <div class="book-side">
+          <div class="book">
+            <div class="book-brand">BLOCK <span class="lime">ACADEMY</span></div>
+            <div>
+              <div class="eyebrow">TRADING GUIDE / VOL. 001</div>
+              <div class="book-title">WEATHER<br>MARKETS<br>ON <span class="lime">POLYMARKET</span></div>
+            </div>
+            <div class="book-foot">A PRACTICAL GUIDE<br><br>DIGITAL EDITION</div>
+          </div>
+        </div>
+
+        <div class="product-info">
+          <div class="eyebrow">TRADING GUIDE · VOLUME 001</div>
+          <h3>A Practical Guide to Weather Markets on Polymarket</h3>
+          <p>
+            A practical introduction to weather prediction markets, platform
+            fundamentals, research methods, trading strategies, probability
+            analysis and risk management.
+          </p>
+
+          <div class="product-tags">
+            <span>Digital PDF</span>
+            <span>Practical examples</span>
+            <span>Strategy focused</span>
+          </div>
+
+          <div class="price">$0.50 <small>USD / ONE-TIME PURCHASE</small></div>
+
+          <div class="product-buttons">
+            <button class="btn" id="previewOpen">READ FREE PREVIEW ↗</button>
+            <button class="btn btn-outline" id="buyOpen">BUY THE GUIDE</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="content" id="preview">
+    <div class="container">
+      <div class="section-heading">
+        <div class="eyebrow">Inside the Publication</div>
+        <h2>Take a look <span class="lime">inside.</span></h2>
+        <p>Explore a sample before purchasing the complete guide.</p>
+      </div>
+
+      <div class="preview-shell">
+        <div class="preview-toolbar">
+          <span id="previewCounter">Preview page 1 of 3</span>
+          <div class="preview-controls">
+            <button class="btn btn-outline btn-small" id="prevPage">← PREVIOUS</button>
+            <button class="btn btn-outline btn-small" id="nextPage">NEXT →</button>
+          </div>
+        </div>
+
+        <div class="preview-page" id="previewPage">
+          <small>BLOCK ACADEMY / TRADING GUIDE</small>
+          <div>
+            <h3>A Practical Guide to Weather Markets on Polymarket</h3>
+            <p>Understand the market, its mechanics and the fundamentals of weather trading.</p>
+          </div>
+          <div class="page-bottom"><span>TRADING GUIDE / VOL. 001</span><span>01</span></div>
+        </div>
+      </div>
+
+      <p class="preview-note">
+        Preview pages are currently illustrative placeholders. Replace them with genuine
+        PDF page images when the final publication is ready.
+      </p>
+    </div>
+  </section>
+
+  <section class="content" id="reviews">
+    <div class="container">
+      <div class="section-heading">
+        <div class="eyebrow">Reader Feedback</div>
+        <h2>Built on <span class="lime">knowledge.</span></h2>
+        <p>Honest reader feedback will help us improve future publications.</p>
+      </div>
+
+      <div class="reviews-box">
+        <div class="stars">★★★★★</div>
+        <h3>Reader reviews are coming soon.</h3>
+        <p>Verified customer reviews will appear here as readers share their experiences.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <div class="eyebrow">Start Learning</div>
+      <h2>Better research.<br><span class="lime">Better decisions.</span></h2>
+      <p>Explore our first trading guide and take a deeper look at weather prediction markets.</p>
+      <button class="btn" id="ctaBuy">GET THE GUIDE — $0.50 ↗</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <a class="logo" href="#">BLOCK <span>ACADEMY</span></a>
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#guides">Publications</a>
+        <a href="#reviews">Reviews</a>
+        <a href="mailto:blockacademyusa@gmail.com">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© <span id="year"></span> Block Academy</div>
+      <p class="disclaimer">
+        Educational content only. Nothing published by Block Academy constitutes
+        financial, investment or trading advice. Trading involves risk, including
+        the possible loss of capital.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="step-indicator" id="stepIndicator">STEP 01 / EMAIL</div>
+        <h2 id="checkoutTitle">Get the guide</h2>
+      </div>
+      <button class="close-modal" data-close aria-label="Close">✕</button>
+    </div>
+
+    <div id="stepEmail">
+      <p class="modal-copy">Enter your email address. Your order status and PDF delivery will be associated with this email.</p>
+      <form id="emailForm">
+        <label for="customerEmail">Email address</label>
+        <input id="customerEmail" type="email" placeholder="you@example.com" required autocomplete="email">
+        <button class="btn" type="submit">CONTINUE TO PAYMENT →</button>
+      </form>
+    </div>
+
+    <div id="stepMethod" class="hidden">
+      <p class="modal-copy">Guide price: <strong class="lime">$0.50 USD</strong>. Select a payment method.</p>
+      <label for="paymentMethod">Payment method</label>
+      <select id="paymentMethod">
+        <option value="">Choose payment method</option>
+        <option value="crypto">Crypto wallet — BNB Chain</option>
+        <option value="binance">Binance Pay</option>
+      </select>
+      <button class="btn" id="methodContinue">CONTINUE →</button>
+    </div>
+
+    <div id="stepPayment" class="hidden">
+      <p class="modal-copy" id="paymentInstructions"></p>
+      <div class="timer" id="paymentTimer">10:00</div>
+      <div id="paymentDetails"></div>
+
+      <form id="paymentForm">
+        <label for="paymentReference" id="referenceLabel">Transaction reference</label>
+        <input id="paymentReference" required placeholder="Paste your transaction reference">
+        <label for="paymentEvidence" id="evidenceLabel">Optional payment screenshot</label>
+        <input id="paymentEvidence" type="file" accept="image/*">
+        <p class="modal-copy">Submitting details does not automatically verify payment. Your order will require manual review.</p>
+        <button class="btn" type="submit">SUBMIT PAYMENT DETAILS →</button>
+      </form>
+    </div>
+
+    <div id="stepSubmitted" class="hidden">
+      <div class="eyebrow">Submission Received</div>
+      <h3 style="font-size:25px;margin:12px 0;">Your order is awaiting review.</h3>
+      <p class="modal-copy">Keep your order reference. The order-status page below is a local demo until connected to the backend.</p>
+      <div class="status-panel">
+        <div class="status-label">PENDING MANUAL VERIFICATION</div>
+        <p id="orderSummary"></p>
+        <p>Order reference: <strong id="orderReference"></strong></p>
+      </div>
+      <button class="btn" id="showStatus">VIEW ORDER STATUS</button>
+    </div>
+
+    <div id="stepStatus" class="hidden">
+      <div class="eyebrow">Order Tracking</div>
+      <h3 style="font-size:25px;margin:12px 0;">Order status</h3>
+      <div class="status-panel">
+        <div class="status-label" id="statusLabel">PENDING REVIEW</div>
+        <p id="statusMessage">Your submitted payment details are awaiting manual verification.</p>
+        <p>Order reference: <strong id="statusOrderReference"></strong></p>
+        <p>Email: <strong id="statusEmail"></strong></p>
+      </div>
+      <p class="modal-copy">This demo status is stored only in this browser. A real order tracking link requires Supabase integration.</p>
+      <button class="btn btn-outline" id="backToSite">BACK TO WEBSITE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  $("year").textContent = new Date().getFullYear();
+
+  // Mobile navigation
+  $("menuToggle").addEventListener("click", () => {
+    $("navLinks").classList.toggle("show");
+  });
+
+  document.querySelectorAll("#navLinks a").forEach(link => {
+    link.addEventListener("click", () => $("navLinks").classList.remove("show"));
+  });
+
+  // Preview pages
+  const previewPages = [
+    {
+      kicker: "BLOCK ACADEMY / TRADING GUIDE",
+      title: "A Practical Guide to Weather Markets on Polymarket",
+      body: "Understand the market, its mechanics and the fundamentals of weather trading.",
+      footer: "TRADING GUIDE / VOL. 001"
+    },
+    {
+      kicker: "CONTENTS / VOLUME 001",
+      title: "Inside the Guide",
+      body: "Chapter 01 — Introduction to Polymarket<br>Chapter 02 — Buying Undervalued YES Outcomes<br>Chapter 03 — Late-Day NO Trading<br>Chapter 04 — High-Probability YES Combination<br>Chapter 05 — Risk Management and Trader Discipline",
+      footer: "CONTENTS"
+    },
+    {
+      kicker: "CHAPTER 01 / INTRODUCTION",
+      title: "Understanding Prediction Markets",
+      body: "Learn how YES and NO shares work, how prices reflect market expectations, and how positions are traded. The complete guide includes practical examples, research frameworks and risk-management considerations.",
+      footer: "SAMPLE PAGE"
+    }
+  ];
+
+  let previewIndex = 0;
+
+  function renderPreview() {
+    const page = previewPages[previewIndex];
+    $("previewPage").innerHTML = `
+      <small>${page.kicker}</small>
+      <div>
+        <h3>${page.title}</h3>
+        <p>${page.body}</p>
+      </div>
+      <div class="page-bottom"><span>${page.footer}</span><span>0${previewIndex + 1}</span></div>
+    `;
+    $("previewCounter").textContent = `Preview page ${previewIndex + 1} of ${previewPages.length}`;
+    $("prevPage").disabled = previewIndex === 0;
+    $("nextPage").disabled = previewIndex === previewPages.length - 1;
+  }
+
+  $("prevPage").addEventListener("click", () => {
+    if (previewIndex > 0) previewIndex--;
+    renderPreview();
+  });
+
+  $("nextPage").addEventListener("click", () => {
+    if (previewIndex < previewPages.length - 1) previewIndex++;
+    renderPreview();
+  });
+
+  $("previewOpen").addEventListener("click", () => {
+    $("preview").scrollIntoView({ behavior: "smooth" });
+  });
+
+  renderPreview();
+
+  // Checkout demo state
+  let customerEmail = "";
+  let paymentMethod = "";
+  let orderRef = "";
+  let countdown = null;
+  let secondsLeft = 0;
+  let orderStatus = "Pending manual verification";
+
+  function openModal() {
+    $("checkoutModal").classList.add("open");
+    document.body.classList.add("modal-open");
+    showStep("stepEmail", "STEP 01 / EMAIL", "Get the guide");
+  }
+
+  function closeModal() {
+    $("checkoutModal").classList.remove("open");
+    document.body.classList.remove("modal-open");
+    if (countdown) clearInterval(countdown);
+    countdown = null;
+  }
+
+  function showStep(id, indicator, title) {
+    ["stepEmail", "stepMethod", "stepPayment", "stepSubmitted", "stepStatus"]
+      .forEach(step => $(step).classList.add("hidden"));
+
+    $(id).classList.remove("hidden");
+    $("stepIndicator").textContent = indicator;
+    $("checkoutTitle").textContent = title;
+  }
+
+  $("buyOpen").addEventListener("click", openModal);
+  $("ctaBuy").addEventListener("click", openModal);
+
+  document.querySelectorAll("[data-close]").forEach(button => {
+    button.addEventListener("click", closeModal);
+  });
+
+  $("checkoutModal").addEventListener("click", (event) => {
+    if (event.target === $("checkoutModal")) closeModal();
+  });
+
+  $("emailForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    customerEmail = $("customerEmail").value.trim();
+
+    if (!customerEmail) return;
+
+    showStep("stepMethod", "STEP 02 / PAYMENT METHOD", "Choose payment");
+  });
+
+  $("methodContinue").addEventListener("click", () => {
+    paymentMethod = $("paymentMethod").value;
+
+    if (!paymentMethod) {
+      alert("Please select a payment method.");
+      return;
+    }
+
+    if (paymentMethod === "crypto") {
+      $("paymentInstructions").textContent =
+        "Send the payment using one of the supported assets on BNB Smart Chain only. After sending, enter the blockchain transaction hash.";
+      $("paymentTimer").textContent = "10:00";
+      $("referenceLabel").textContent = "Blockchain transaction hash (TxID)";
+      $("paymentReference").placeholder = "Paste blockchain transaction hash";
+      $("evidenceLabel").textContent = "Optional wallet transaction screenshot";
+
+      $("paymentDetails").innerHTML = `
+        <div class="payment-address">
+          Recipient wallet:<br>
+          0xf29D44F02a4cBD41e96718ed95183C9083D264a2
+          <button type="button" class="btn btn-outline btn-small" id="copyWallet" style="margin-top:10px;width:auto;">COPY ADDRESS</button>
+        </div>
+        <p class="modal-copy">Accepted assets: BNB on BNB Smart Chain, USDT BEP-20, or USDC BEP-20. Confirm the amount and network at checkout before sending.</p>
+      `;
+
+      setTimeout(() => {
+        const copyBtn = $("copyWallet");
+        if (copyBtn) copyBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText("0xf29D44F02a4cBD41e96718ed95183C9083D264a2");
+            copyBtn.textContent = "COPIED";
+          } catch {
+            alert("Copy not available here. Select and copy the wallet address.");
+          }
+        });
+      }, 0);
+
+    } else {
+      $("paymentInstructions").textContent =
+        "Complete the payment through Binance Pay. Enter your Binance Pay transaction or reference ID. Payment screenshots may be included as supporting evidence.";
+      $("paymentTimer").textContent = "15:00";
+      $("referenceLabel").textContent = "Binance Pay transaction/reference ID";
+      $("paymentReference").placeholder = "Enter Binance Pay reference ID";
+      $("evidenceLabel").textContent = "Optional Binance Pay screenshot";
+
+      $("paymentDetails").innerHTML = `
+        <div class="payment-address">
+          Binance Pay ID: 484951385
+          <button type="button" class="btn btn-outline btn-small" id="copyBinance" style="margin-top:10px;width:auto;">COPY PAY ID</button>
+        </div>
+        <p class="modal-copy">Use the Binance Pay ID above. A QR code can be added here when the official payment QR is supplied.</p>
+      `;
+
+      setTimeout(() => {
+        const copyBtn = $("copyBinance");
+        if (copyBtn) copyBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText("484951385");
+            copyBtn.textContent = "COPIED";
+          } catch {
+            alert("Copy not available here. Select and copy the Pay ID.");
+          }
+        });
+      }, 0);
+    }
+
+    showStep("stepPayment", "STEP 03 / PAYMENT", "Complete payment");
+    startTimer(paymentMethod === "crypto" ? 600 : 900);
+  });
+
+  function startTimer(totalSeconds) {
+    if (countdown) clearInterval(countdown);
+    secondsLeft = totalSeconds;
+    updateTimer();
+
+    countdown = setInterval(() => {
+      secondsLeft--;
+      updateTimer();
+
+      if (secondsLeft <= 0) {
+        clearInterval(countdown);
+        countdown = null;
+        $("paymentInstructions").textContent =
+          "The displayed payment window has ended. You may still submit your reference for manual review, but the order may require additional checking.";
+      }
+    }, 1000);
+  }
+
+  function updateTimer() {
+    const mins = String(Math.floor(Math.max(0, secondsLeft) / 60)).padStart(2, "0");
+    const secs = String(Math.max(0, secondsLeft) % 60).padStart(2, "0");
+    $("paymentTimer").textContent = `${mins}:${secs}`;
+  }
+
+  $("paymentForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const reference = $("paymentReference").value.trim();
+    if (!reference) return;
+
+    orderRef = "BA-" + Math.random().toString(36).slice(2, 9).toUpperCase();
+    orderStatus = "Pending manual verification";
+
+    const file = $("paymentEvidence").files[0];
+    const fileNote = file ? " A screenshot was selected in this browser." : "";
+
+    $("orderSummary").textContent =
+      `Payment method: ${paymentMethod === "crypto" ? "Crypto wallet / BNB Chain" : "Binance Pay"}. Reference received: ${reference}.${fileNote}`;
+
+    $("orderReference").textContent = orderRef;
+    showStep("stepSubmitted", "STEP 04 / SUBMITTED", "Submission received");
+
+    if (countdown) clearInterval(countdown);
+    countdown = null;
+  });
+
+  $("showStatus").addEventListener("click", () => {
+    $("statusLabel").textContent = orderStatus.toUpperCase();
+    $("statusMessage").textContent =
+      "Your submitted payment details are awaiting manual verification. This demo cannot verify payments or deliver the PDF.";
+    $("statusOrderReference").textContent = orderRef;
+    $("statusEmail").textContent = customerEmail;
+    showStep("stepStatus", "ORDER TRACKING", "Order status");
+  });
+
+  $("backToSite").addEventListener("click", closeModal);
+</script>
+
+</body>
+</html>
