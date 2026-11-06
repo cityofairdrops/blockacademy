@@ -1,4 +1,3 @@
-
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
@@ -6,86 +5,69 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SECRET_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    return res.status(500).json({ error: "Server configuration error" });
-  }
-
-  const { tracking_token } = req.body || {};
-
-  if (
-    typeof tracking_token !== "string" ||
-    !/^[a-f0-9]{64}$/i.test(tracking_token)
-  ) {
-    return res.status(400).json({ error: "Enter a valid tracking token" });
-  }
-
-  const baseUrl = supabaseUrl.replace(/\/+$/, "");
-  const headers = {
-    apikey: supabaseKey,
-    Authorization: `Bearer ${supabaseKey}`
-  };
-
   try {
-    const orderUrl = new URL(`${baseUrl}/rest/v1/orders`);
+    const { order_id } = req.body || {};
 
-    orderUrl.searchParams.set("tracking_token", `eq.${tracking_token}`);
-    orderUrl.searchParams.set(
-      "select",
-      "id,email,product_slug,amount_usd,payment_method,payment_currency,status,payment_expires_at,approved_at,completed_at,created_at,updated_at"
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+    if (!uuidPattern.test(String(order_id || ""))) {
+      return res.status(400).json({ error: "Please enter a valid Order ID." });
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SECRET_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      return res.status(500).json({ error: "Tracking system is not configured." });
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/orders?id=eq.${encodeURIComponent(order_id)}&select=id,product_slug,amount_usd,payment_method,payment_currency,status,payment_expires_at,created_at,approved_at,completed_at`,
+      {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`
+        }
+      }
     );
 
-    const response = await fetch(orderUrl, { headers });
-
     if (!response.ok) {
-      console.error("Order lookup failed:", await response.text());
-      return res.status(502).json({ error: "Unable to retrieve order" });
+      throw new Error("Order lookup failed");
     }
 
     const orders = await response.json();
+
+    if (!orders.length) {
+      return res.status(404).json({ error: "Order not found." });
+    }
+
     const order = orders[0];
 
-    if (!order) {
-      return res.status(404).json({
-        error: "No order found. Check your tracking token."
-      });
-    }
-
-    const submissionUrl = new URL(
-      `${baseUrl}/rest/v1/payment_submissions`
-    );
-
-    submissionUrl.searchParams.set("order_id", `eq.${order.id}`);
-    submissionUrl.searchParams.set(
-      "select",
-      "payment_method,transaction_reference,review_status,created_at,reviewed_at"
-    );
-    submissionUrl.searchParams.set("order", "created_at.desc");
-    submissionUrl.searchParams.set("limit", "1");
-
-    const submissionResponse = await fetch(submissionUrl, { headers });
-
-    if (!submissionResponse.ok) {
-      console.error(
-        "Payment lookup failed:",
-        await submissionResponse.text()
-      );
-      return res.status(502).json({
-        error: "Unable to retrieve payment information"
-      });
-    }
-
-    const submissions = await submissionResponse.json();
+    const productTitles = {
+      "trading-guide-weather-markets":
+        "Trading Guide — A Practical Guide to Weather Markets on Polymarket"
+    };
 
     return res.status(200).json({
       success: true,
-      order,
-      payment_submission: submissions[0] || null
+      order: {
+        order_id: order.id,
+        product_slug: order.product_slug,
+        product_title: productTitles[order.product_slug] || "Digital product",
+        amount_usd: order.amount_usd,
+        payment_method: order.payment_method,
+        payment_currency: order.payment_currency,
+        status: order.status,
+        payment_expires_at: order.payment_expires_at,
+        created_at: order.created_at,
+        approved_at: order.approved_at,
+        completed_at: order.completed_at
+      }
     });
+
   } catch (error) {
-    console.error("Track order error:", error);
-    return res.status(500).json({ error: "Unexpected server error" });
+    console.error("Order tracking error:", error);
+    return res.status(500).json({ error: "Unable to track this order right now." });
   }
 }
