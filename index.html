@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,8 +7,8 @@
 <title>Block Academy — Trading Education</title>
 <meta name="description" content="Practical trading guides and independent market research from Block Academy.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
 :root{--bg:#080909;--panel:#111412;--white:#fff;--muted:#a0a7a1;--lime:#b5ff45;--border:#292e2a;--font:"Josefin Sans",sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -120,11 +119,13 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 .payment-instructions strong{color:white}
 .countdown{font-size:25px;font-weight:700;color:var(--lime);margin-top:8px}
 .error-message{color:#ff8e8e;font-size:12px;margin-top:12px;line-height:1.6}
+.success-message{color:var(--lime);font-size:12px;margin-top:12px;line-height:1.6}
 .hidden{display:none!important}
 @media(max-width:800px){.hero-grid,.about-grid,.product-card{grid-template-columns:1fr}.hero-grid{gap:35px}.product-info{padding:30px}.book-side{min-height:370px}.nav-links{gap:15px}}
 @media(max-width:560px){.nav{min-height:66px}.logo{font-size:18px}.nav-links{display:none;position:absolute;top:66px;left:0;right:0;padding:20px 5%;background:#080909;border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start}.nav-links.show{display:flex}.menu-toggle{display:block}.nav .nav-cta{display:none}.hero-grid{padding:55px 0}h1{letter-spacing:-1px}section.content{padding:70px 0}.ticker-row{display:grid;grid-template-columns:1fr 1fr}.preview-page{min-height:390px;padding:25px}.modal-card{padding:22px}.footer-top,.footer-bottom{flex-direction:column}}
 </style>
 </head>
+
 <body>
 <header>
 <div class="container nav">
@@ -324,18 +325,31 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 <p>Time remaining:</p>
 <div class="countdown" id="paymentCountdown">30:00</div>
 </div>
+
 <div class="payment-instructions" id="cryptoInstructions">
 <p><strong>BNB Chain payment address</strong></p>
 <p id="walletAddress">0xf29D44F02a4cBD41e96718ed95183C9083D264a2</p>
-<p>Send only the selected currency on the BNB Smart Chain (BEP-20 for USDT/USDC). Confirm the amount equivalent to $0.50 before sending.</p>
+<p>Selected currency: <strong id="createdCurrency"></strong></p>
+<p>Send only the selected currency to this address on BNB Chain. Confirm the correct amount equivalent to $0.50 before sending.</p>
 </div>
+
 <div class="payment-instructions hidden" id="binanceInstructions">
 <p><strong>Binance Pay UID</strong></p>
 <p>484951385</p>
 <p>Send exactly $0.50 USD through Binance Pay. Verify the recipient UID before confirming.</p>
 </div>
+
+<div class="payment-instructions" id="referenceForm">
+<p><strong>Submit your payment reference</strong></p>
+<p>After sending payment, enter your transaction hash or Binance Pay transaction reference below.</p>
+<label for="transactionReference">Transaction ID / Reference</label>
+<input id="transactionReference" type="text" maxlength="200" placeholder="Enter transaction hash or payment reference" autocomplete="off">
+<button class="btn" id="submitPayment">SUBMIT PAYMENT REFERENCE →</button>
+<p id="referenceMessage" class="error-message"></p>
+</div>
+
 <div class="warning">
-Payment is not automatically verified. Keep your transaction reference or Binance Pay receipt. Do not close this page until you have saved your order ID.
+Payment is manually reviewed by the administrator. Submitting a reference does not mean payment has been verified. Do not submit until you have actually sent the payment.
 </div>
 <p class="modal-copy" id="expiryMessage">Your payment window expires 30 minutes after order creation.</p>
 <button class="btn btn-outline" id="backToSite">BACK TO WEBSITE</button>
@@ -355,6 +369,7 @@ const previewPages = [
 {kicker:"CONTENTS / VOLUME 001",title:"Inside the Guide",body:"Chapter 01 — Introduction to Polymarket<br>Chapter 02 — Buying Undervalued YES Outcomes<br>Chapter 03 — Late-Day NO Trading<br>Chapter 04 — High-Probability YES Combination<br>Chapter 05 — Risk Management and Trader Discipline",footer:"CONTENTS"},
 {kicker:"CHAPTER 01 / INTRODUCTION",title:"Understanding Prediction Markets",body:"Learn how YES and NO shares work, how prices reflect market expectations, and how positions are traded. The complete guide includes practical examples, research frameworks and risk-management considerations.",footer:"SAMPLE PAGE"}
 ];
+
 let previewIndex = 0;
 function renderPreview(){
 const page=previewPages[previewIndex];
@@ -371,6 +386,9 @@ renderPreview();
 let customerEmail="";
 let countdownInterval=null;
 let paymentExpiry=null;
+let currentOrder=null;
+let selectedMethod="";
+let selectedCurrency="";
 
 function openModal(){
 $("checkoutModal").classList.add("open");
@@ -413,15 +431,19 @@ $("paymentMethodNote").textContent=method==="crypto"
 function startCountdown(expiry){
 if(countdownInterval)clearInterval(countdownInterval);
 paymentExpiry=new Date(expiry).getTime();
+
 function update(){
 const remaining=Math.max(0,paymentExpiry-Date.now());
 const minutes=Math.floor(remaining/60000);
 const seconds=Math.floor((remaining%60000)/1000);
 $("paymentCountdown").textContent=String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0");
+
 if(remaining<=0){
 clearInterval(countdownInterval);
 $("paymentCountdown").textContent="EXPIRED";
 $("expiryMessage").textContent="This payment window has expired. Do not send payment for this order.";
+$("submitPayment").disabled=true;
+$("transactionReference").disabled=true;
 }
 }
 update();
@@ -455,24 +477,46 @@ headers:{"Content-Type":"application/json"},
 body:JSON.stringify({
 email:customerEmail,
 payment_method:method,
-payment_currency:currency
+payment_currency:currency,
+product_slug:"trading-guide-weather-markets"
 })
 });
+
 const result=await response.json();
 
 if(!response.ok||!result.success){
 throw new Error(result.error||"Could not create your order. Please try again.");
 }
 
+if(!result.order_id||!result.tracking_token||!result.payment_expires_at){
+throw new Error("The server response is missing required order information.");
+}
+
+currentOrder={
+order_id:result.order_id,
+tracking_token:result.tracking_token,
+payment_method:method,
+payment_currency:currency
+};
+
+selectedMethod=method;
+selectedCurrency=currency;
+
 $("createdOrderId").textContent=result.order_id;
 $("createdEmail").textContent=result.email||customerEmail;
 $("createdMethod").textContent=method==="crypto"?"Crypto — "+currency:"Binance Pay";
+$("createdCurrency").textContent=currency;
 $("cryptoInstructions").classList.toggle("hidden",method!=="crypto");
 $("binanceInstructions").classList.toggle("hidden",method!=="binance_pay");
 
-const expiry=result.payment_expires_at;
-if(!expiry)throw new Error("The server did not return a payment expiry time.");
-startCountdown(expiry);
+$("transactionReference").value="";
+$("transactionReference").disabled=false;
+$("submitPayment").disabled=false;
+$("submitPayment").textContent="SUBMIT PAYMENT REFERENCE →";
+$("referenceMessage").textContent="";
+$("referenceMessage").className="error-message";
+
+startCountdown(result.payment_expires_at);
 showStep("stepCreated","STEP 03 / PAYMENT","Complete your payment");
 
 }catch(error){
@@ -481,6 +525,64 @@ $("createOrderError").classList.remove("hidden");
 }finally{
 button.disabled=false;
 button.textContent="CREATE ORDER →";
+}
+});
+
+$("submitPayment").addEventListener("click",async()=>{
+if(!currentOrder){
+$("referenceMessage").textContent="Order information is missing. Please create a new order.";
+return;
+}
+
+if(Date.now()>=paymentExpiry){
+$("referenceMessage").textContent="This payment window has expired. Please create a new order.";
+$("submitPayment").disabled=true;
+return;
+}
+
+const reference=$("transactionReference").value.trim();
+
+if(reference.length<5||reference.length>200){
+$("referenceMessage").textContent="Enter a valid transaction reference (5–200 characters).";
+$("referenceMessage").className="error-message";
+return;
+}
+
+const button=$("submitPayment");
+button.disabled=true;
+button.textContent="SUBMITTING...";
+$("referenceMessage").textContent="";
+$("referenceMessage").className="error-message";
+
+try{
+const response=await fetch("/api/submit-payment",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+order_id:currentOrder.order_id,
+tracking_token:currentOrder.tracking_token,
+payment_method:currentOrder.payment_method,
+payment_currency:currentOrder.payment_currency,
+transaction_reference:reference
+})
+});
+
+const result=await response.json();
+
+if(!response.ok||!result.success){
+throw new Error(result.error||"Could not submit payment reference.");
+}
+
+$("referenceMessage").textContent="Payment reference submitted successfully. Your payment is now awaiting administrator review.";
+$("referenceMessage").className="success-message";
+button.textContent="REFERENCE SUBMITTED";
+$("transactionReference").disabled=true;
+
+}catch(error){
+$("referenceMessage").textContent=error.message||"Submission failed. Please try again.";
+$("referenceMessage").className="error-message";
+button.disabled=false;
+button.textContent="SUBMIT PAYMENT REFERENCE →";
 }
 });
 
