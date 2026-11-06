@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,21 +7,11 @@
 <meta name="theme-color" content="#080909">
 <title>Block Academy — Trading Education</title>
 <meta name="description" content="Practical trading guides and independent market research from Block Academy.">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-:root {
-  --bg:#080909;
-  --panel:#111412;
-  --white:#fff;
-  --muted:#a0a7a1;
-  --lime:#b5ff45;
-  --border:#292e2a;
-  --font:"Josefin Sans",sans-serif;
-}
+:root{--bg:#080909;--panel:#111412;--white:#fff;--muted:#a0a7a1;--lime:#b5ff45;--border:#292e2a;--font:"Josefin Sans",sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:85px}
 body{background:var(--bg);color:var(--white);font-family:var(--font);line-height:1.6;overflow-x:hidden}
@@ -29,8 +20,7 @@ a{color:inherit;text-decoration:none}
 button,input,select{font:inherit}
 button{cursor:pointer}
 .container{width:min(1160px,90%);margin:auto}
-.lime{color:var(--lime)}
-.muted{color:var(--muted)}
+.lime{color:var(--lime)}.muted{color:var(--muted)}
 .eyebrow{color:var(--lime);font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 20px;border:1px solid var(--lime);background:var(--lime);color:#080909;font-size:12px;font-weight:700;letter-spacing:.5px;transition:.2s}
 .btn:hover{background:#d0ff89;transform:translateY(-2px)}
@@ -38,7 +28,6 @@ button{cursor:pointer}
 .btn-outline:hover{background:transparent;color:var(--lime);border-color:var(--lime)}
 .btn-small{padding:10px 13px;font-size:11px}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-
 header{position:sticky;top:0;z-index:20;background:rgba(8,9,9,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
 .nav{min-height:74px;display:flex;justify-content:space-between;align-items:center;gap:20px}
 .logo{font-size:22px;font-weight:700;letter-spacing:-1px;white-space:nowrap}
@@ -46,7 +35,6 @@ header{position:sticky;top:0;z-index:20;background:rgba(8,9,9,.94);backdrop-filt
 .nav-links{display:flex;align-items:center;gap:28px;color:#c3c8c3;font-size:13px}
 .nav-links a:hover{color:var(--lime)}
 .menu-toggle{display:none;color:white;background:transparent;border:1px solid var(--border);padding:9px 12px}
-
 .hero{min-height:570px;display:flex;align-items:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
 .hero:before{content:"";position:absolute;width:650px;height:650px;right:-200px;top:-80px;border-radius:50%;background:radial-gradient(circle,rgba(181,255,69,.08),transparent 68%);pointer-events:none}
 .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center;padding:75px 0}
@@ -57,7 +45,6 @@ h1{font-size:clamp(44px,6vw,75px);line-height:1.05;letter-spacing:-2px;margin:22
 .chart-top,.chart-bottom{display:flex;justify-content:space-between;gap:12px;font-size:10px;letter-spacing:1px;color:var(--muted)}
 .chart-card svg{width:100%;height:225px;margin:24px 0}
 .chart-bottom{border-top:1px solid var(--border);padding-top:14px}
-
 .ticker{border-bottom:1px solid var(--border);padding:17px 0}
 .ticker-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:15px}
 .ticker span{font-size:10px;letter-spacing:1.6px;color:var(--muted)}
@@ -66,7 +53,6 @@ section.content{padding:95px 0;border-bottom:1px solid var(--border)}
 .section-heading{max-width:680px;margin-bottom:40px}
 .section-heading h2{font-size:clamp(32px,4vw,48px);line-height:1.2;margin:15px 0}
 .section-heading p{color:var(--muted);font-size:14px;line-height:1.9}
-
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:65px}
 .about-grid h2{font-size:40px;line-height:1.2;margin:17px 0}
 .about-grid p{color:var(--muted);font-size:14px;line-height:2;margin-bottom:14px}
@@ -75,7 +61,6 @@ section.content{padding:95px 0;border-bottom:1px solid var(--border)}
 .principle strong{color:var(--lime);font-size:13px}
 .principle h3{font-size:15px;margin-bottom:5px}
 .principle p{font-size:12px;margin:0;color:var(--muted)}
-
 .product-card{display:grid;grid-template-columns:.8fr 1.2fr;background:var(--panel);border:1px solid var(--border)}
 .book-side{min-height:420px;display:grid;place-items:center;padding:35px;background:radial-gradient(circle,rgba(181,255,69,.10),transparent 65%),#101310}
 .book{width:min(270px,100%);aspect-ratio:.72;padding:25px;background:#090b09;border:1px solid #444b43;box-shadow:12px 15px 35px #0008;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
@@ -91,7 +76,6 @@ section.content{padding:95px 0;border-bottom:1px solid var(--border)}
 .price{font-size:32px;font-weight:700;margin-bottom:20px}
 .price small{color:var(--muted);font-size:11px;font-weight:400}
 .product-buttons{display:flex;flex-wrap:wrap;gap:12px}
-
 .preview-shell{background:var(--panel);border:1px solid var(--border);padding:22px}
 .preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
 .preview-toolbar span{color:var(--muted);font-size:12px}
@@ -102,7 +86,6 @@ section.content{padding:95px 0;border-bottom:1px solid var(--border)}
 .preview-page p{color:#555c54;font-size:13px;line-height:1.9;max-width:500px}
 .preview-page .page-bottom{display:flex;justify-content:space-between;font-size:10px;color:#6b7169;border-top:1px solid #c9ccc5;padding-top:12px}
 .preview-note{color:var(--muted);font-size:11px;margin-top:14px}
-
 .reviews-box{border:1px solid var(--border);background:var(--panel);text-align:center;padding:42px 20px}
 .stars{color:var(--lime);letter-spacing:5px;font-size:24px}
 .reviews-box h3{font-size:24px;margin:12px 0}
@@ -116,7 +99,6 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 .footer-links a:hover{color:var(--lime)}
 .footer-bottom{border-top:1px solid var(--border);margin-top:22px;padding-top:20px;color:#777f78;font-size:11px}
 .disclaimer{max-width:700px;line-height:1.8}
-
 .modal{display:none;position:fixed;inset:0;z-index:100;background:#000b;padding:20px;overflow-y:auto;align-items:center;justify-content:center}
 .modal.open{display:flex}
 .modal-card{width:min(520px,100%);background:#101310;border:1px solid #3a403a;padding:28px;position:relative;max-height:90vh;overflow-y:auto}
@@ -131,417 +113,378 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 .step-indicator{color:var(--muted);font-size:10px;letter-spacing:1.5px;margin-bottom:9px}
 .status-panel{background:#080909;border:1px solid var(--border);padding:18px;margin-top:14px}
 .status-label{color:var(--lime);font-size:11px;letter-spacing:1.4px;font-weight:700}
-.status-panel p{color:var(--muted);font-size:12px;line-height:1.8;margin-top:8px}
+.status-panel p{color:var(--muted);font-size:12px;line-height:1.8;margin-top:8px;overflow-wrap:anywhere}
 .warning{border:1px solid #766b36;background:#211e10;padding:14px;margin:15px 0;color:#f1df9a;font-size:12px;line-height:1.8}
-.hidden{display:none!important}
+.payment-instructions{border:1px solid var(--border);background:#080909;padding:16px;margin-top:15px;overflow-wrap:anywhere}
+.payment-instructions p{font-size:12px;color:var(--muted);margin:7px 0;line-height:1.8}
+.payment-instructions strong{color:white}
+.countdown{font-size:25px;font-weight:700;color:var(--lime);margin-top:8px}
 .error-message{color:#ff8e8e;font-size:12px;margin-top:12px;line-height:1.6}
-
-@media(max-width:800px){
-  .hero-grid,.about-grid,.product-card{grid-template-columns:1fr}
-  .hero-grid{gap:35px}
-  .product-info{padding:30px}
-  .book-side{min-height:370px}
-  .nav-links{gap:15px}
-}
-@media(max-width:560px){
-  .nav{min-height:66px}
-  .logo{font-size:18px}
-  .nav-links{display:none;position:absolute;top:66px;left:0;right:0;padding:20px 5%;background:#080909;border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start}
-  .nav-links.show{display:flex}
-  .menu-toggle{display:block}
-  .nav .nav-cta{display:none}
-  .hero-grid{padding:55px 0}
-  h1{letter-spacing:-1px}
-  section.content{padding:70px 0}
-  .ticker-row{display:grid;grid-template-columns:1fr 1fr}
-  .preview-page{min-height:390px;padding:25px}
-  .modal-card{padding:22px}
-  .footer-top,.footer-bottom{flex-direction:column}
-}
+.hidden{display:none!important}
+@media(max-width:800px){.hero-grid,.about-grid,.product-card{grid-template-columns:1fr}.hero-grid{gap:35px}.product-info{padding:30px}.book-side{min-height:370px}.nav-links{gap:15px}}
+@media(max-width:560px){.nav{min-height:66px}.logo{font-size:18px}.nav-links{display:none;position:absolute;top:66px;left:0;right:0;padding:20px 5%;background:#080909;border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start}.nav-links.show{display:flex}.menu-toggle{display:block}.nav .nav-cta{display:none}.hero-grid{padding:55px 0}h1{letter-spacing:-1px}section.content{padding:70px 0}.ticker-row{display:grid;grid-template-columns:1fr 1fr}.preview-page{min-height:390px;padding:25px}.modal-card{padding:22px}.footer-top,.footer-bottom{flex-direction:column}}
 </style>
 </head>
-
 <body>
-
 <header>
-  <div class="container nav">
-    <a class="logo" href="#">BLOCK <span>ACADEMY</span></a>
-    <nav class="nav-links" id="navLinks">
-      <a href="#about">About</a>
-      <a href="#guides">Guides</a>
-      <a href="#preview">Preview</a>
-      <a href="#reviews">Reviews</a>
-    </nav>
-    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation">☰</button>
-    <a href="#guides" class="btn btn-small nav-cta">EXPLORE GUIDES ↗</a>
-  </div>
+<div class="container nav">
+<a class="logo" href="#">BLOCK <span>ACADEMY</span></a>
+<nav class="nav-links" id="navLinks">
+<a href="#about">About</a><a href="#guides">Guides</a><a href="#preview">Preview</a><a href="#reviews">Reviews</a>
+</nav>
+<button class="menu-toggle" id="menuToggle" aria-label="Open navigation">☰</button>
+<a href="#guides" class="btn btn-small nav-cta">EXPLORE GUIDES ↗</a>
+</div>
 </header>
 
 <main>
-
 <section class="hero">
-  <div class="container hero-grid">
-    <div>
-      <div class="eyebrow">Independent Trading Education</div>
-      <h1>Knowledge is<br>your <span class="lime">edge.</span></h1>
-      <p>Practical trading guides and independent market research for people who want to understand the mechanics behind the markets they trade.</p>
-      <div class="hero-actions">
-        <a href="#guides" class="btn">EXPLORE PUBLICATIONS ↗</a>
-        <a href="#about" class="btn btn-outline">OUR APPROACH</a>
-      </div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-top"><span>MARKET ANALYSIS / 001</span><span class="lime">BLOCK ACADEMY</span></div>
-      <svg viewBox="0 0 440 220" fill="none" aria-label="Decorative market chart">
-        <defs><linearGradient id="chartFill" x1="220" y1="0" x2="220" y2="220"><stop stop-color="#B5FF45" stop-opacity=".22"/><stop offset="1" stop-color="#B5FF45" stop-opacity="0"/></linearGradient></defs>
-        <path d="M0 180 L45 155 L80 165 L125 110 L165 130 L205 85 L250 105 L290 55 L335 78 L380 28 L440 12 L440 220 L0 220 Z" fill="url(#chartFill)"/>
-        <path d="M0 180 L45 155 L80 165 L125 110 L165 130 L205 85 L250 105 L290 55 L335 78 L380 28 L440 12" stroke="#B5FF45" stroke-width="2.5" stroke-linejoin="round"/>
-        <path d="M0 205 H440 M0 145 H440 M0 85 H440" stroke="#555B55" stroke-dasharray="4 6" opacity=".5"/>
-        <circle cx="380" cy="28" r="5" fill="#B5FF45"/><circle cx="380" cy="28" r="11" stroke="#B5FF45" opacity=".35"/>
-      </svg>
-      <div class="chart-bottom"><span>RESEARCH-DRIVEN</span><span>DATA · STRATEGY · DISCIPLINE</span></div>
-    </div>
-  </div>
+<div class="container hero-grid">
+<div>
+<div class="eyebrow">Independent Trading Education</div>
+<h1>Knowledge is<br>your <span class="lime">edge.</span></h1>
+<p>Practical trading guides and independent market research for people who want to understand the mechanics behind the markets they trade.</p>
+<div class="hero-actions">
+<a href="#guides" class="btn">EXPLORE PUBLICATIONS ↗</a>
+<a href="#about" class="btn btn-outline">OUR APPROACH</a>
+</div>
+</div>
+<div class="chart-card">
+<div class="chart-top"><span>MARKET ANALYSIS / 001</span><span class="lime">BLOCK ACADEMY</span></div>
+<svg viewBox="0 0 440 220" fill="none" aria-label="Decorative market chart">
+<defs><linearGradient id="chartFill" x1="220" y1="0" x2="220" y2="220"><stop stop-color="#B5FF45" stop-opacity=".22"/><stop offset="1" stop-color="#B5FF45" stop-opacity="0"/></linearGradient></defs>
+<path d="M0 180 L45 155 L80 165 L125 110 L165 130 L205 85 L250 105 L290 55 L335 78 L380 28 L440 12 L440 220 L0 220 Z" fill="url(#chartFill)"/>
+<path d="M0 180 L45 155 L80 165 L125 110 L165 130 L205 85 L250 105 L290 55 L335 78 L380 28 L440 12" stroke="#B5FF45" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M0 205 H440 M0 145 H440 M0 85 H440" stroke="#555B55" stroke-dasharray="4 6" opacity=".5"/>
+<circle cx="380" cy="28" r="5" fill="#B5FF45"/><circle cx="380" cy="28" r="11" stroke="#B5FF45" opacity=".35"/>
+</svg>
+<div class="chart-bottom"><span>RESEARCH-DRIVEN</span><span>DATA · STRATEGY · DISCIPLINE</span></div>
+</div>
+</div>
 </section>
 
-<div class="ticker">
-  <div class="container ticker-row">
-    <span><b>✳</b> Practical Knowledge</span>
-    <span><b>✳</b> Independent Research</span>
-    <span><b>✳</b> Market Education</span>
-    <span><b>✳</b> Digital Publications</span>
-  </div>
-</div>
+<div class="ticker"><div class="container ticker-row">
+<span><b>✳</b> Practical Knowledge</span><span><b>✳</b> Independent Research</span><span><b>✳</b> Market Education</span><span><b>✳</b> Digital Publications</span>
+</div></div>
 
 <section class="content" id="about">
-  <div class="container about-grid">
-    <div>
-      <div class="eyebrow">About Block Academy</div>
-      <h2>Learn the market.<br>Think <span class="lime">independently.</span></h2>
-      <p>Block Academy is an independent educational publication focused on trading, cryptocurrency, prediction markets and financial research.</p>
-      <p>We explain complex market concepts through structured guides, practical examples and research-based explanations.</p>
-      <p>Our approach is built around preparation, knowledge and disciplined decision-making—not promises of profit.</p>
-    </div>
-    <div class="principles">
-      <div class="principle"><strong>01</strong><div><h3>Research First</h3><p>Understand the underlying data before making a trading decision.</p></div></div>
-      <div class="principle"><strong>02</strong><div><h3>Practical Education</h3><p>Learn through examples, explanations and structured strategies.</p></div></div>
-      <div class="principle"><strong>03</strong><div><h3>Risk Awareness</h3><p>Understand uncertainty, costs and risk before entering a market.</p></div></div>
-    </div>
-  </div>
+<div class="container about-grid">
+<div>
+<div class="eyebrow">About Block Academy</div>
+<h2>Learn the market.<br>Think <span class="lime">independently.</span></h2>
+<p>Block Academy is an independent educational publication focused on trading, cryptocurrency, prediction markets and financial research.</p>
+<p>We explain complex market concepts through structured guides, practical examples and research-based explanations.</p>
+<p>Our approach is built around preparation, knowledge and disciplined decision-making—not promises of profit.</p>
+</div>
+<div class="principles">
+<div class="principle"><strong>01</strong><div><h3>Research First</h3><p>Understand the underlying data before making a trading decision.</p></div></div>
+<div class="principle"><strong>02</strong><div><h3>Practical Education</h3><p>Learn through examples, explanations and structured strategies.</p></div></div>
+<div class="principle"><strong>03</strong><div><h3>Risk Awareness</h3><p>Understand uncertainty, costs and risk before entering a market.</p></div></div>
+</div>
+</div>
 </section>
 
 <section class="content" id="guides">
-  <div class="container">
-    <div class="section-heading">
-      <div class="eyebrow">Our Publications</div>
-      <h2>Knowledge worth <span class="lime">studying.</span></h2>
-      <p>Explore practical digital publications created to help readers understand trading concepts and market strategies.</p>
-    </div>
-    <article class="product-card">
-      <div class="book-side">
-        <div class="book">
-          <div class="book-brand">BLOCK <span class="lime">ACADEMY</span></div>
-          <div><div class="eyebrow">TRADING GUIDE / VOL. 001</div><div class="book-title">WEATHER<br>MARKETS<br>ON <span class="lime">POLYMARKET</span></div></div>
-          <div class="book-foot">A PRACTICAL GUIDE<br><br>DIGITAL EDITION</div>
-        </div>
-      </div>
-      <div class="product-info">
-        <div class="eyebrow">TRADING GUIDE · VOLUME 001</div>
-        <h3>A Practical Guide to Weather Markets on Polymarket</h3>
-        <p>A practical introduction to weather prediction markets, platform fundamentals, research methods, trading strategies, probability analysis and risk management.</p>
-        <div class="product-tags"><span>Digital PDF</span><span>Practical examples</span><span>Strategy focused</span></div>
-        <div class="price">$0.50 <small>USD / ONE-TIME PURCHASE</small></div>
-        <div class="product-buttons">
-          <button class="btn" id="previewOpen">READ FREE PREVIEW ↗</button>
-          <button class="btn btn-outline" id="buyOpen">BUY THE GUIDE</button>
-        </div>
-      </div>
-    </article>
-  </div>
+<div class="container">
+<div class="section-heading">
+<div class="eyebrow">Our Publications</div>
+<h2>Knowledge worth <span class="lime">studying.</span></h2>
+<p>Explore practical digital publications created to help readers understand trading concepts and market strategies.</p>
+</div>
+<article class="product-card">
+<div class="book-side"><div class="book">
+<div class="book-brand">BLOCK <span class="lime">ACADEMY</span></div>
+<div><div class="eyebrow">TRADING GUIDE / VOL. 001</div><div class="book-title">WEATHER<br>MARKETS<br>ON <span class="lime">POLYMARKET</span></div></div>
+<div class="book-foot">A PRACTICAL GUIDE<br><br>DIGITAL EDITION</div>
+</div></div>
+<div class="product-info">
+<div class="eyebrow">TRADING GUIDE · VOLUME 001</div>
+<h3>A Practical Guide to Weather Markets on Polymarket</h3>
+<p>A practical introduction to weather prediction markets, platform fundamentals, research methods, trading strategies, probability analysis and risk management.</p>
+<div class="product-tags"><span>Digital PDF</span><span>Practical examples</span><span>Strategy focused</span></div>
+<div class="price">$0.50 <small>USD / ONE-TIME PURCHASE</small></div>
+<div class="product-buttons">
+<button class="btn" id="previewOpen">READ FREE PREVIEW ↗</button>
+<button class="btn btn-outline" id="buyOpen">BUY THE GUIDE</button>
+</div>
+</div>
+</article>
+</div>
 </section>
 
 <section class="content" id="preview">
-  <div class="container">
-    <div class="section-heading">
-      <div class="eyebrow">Inside the Publication</div>
-      <h2>Take a look <span class="lime">inside.</span></h2>
-      <p>Explore a sample before purchasing the complete guide.</p>
-    </div>
-    <div class="preview-shell">
-      <div class="preview-toolbar">
-        <span id="previewCounter">Preview page 1 of 3</span>
-        <div class="preview-controls">
-          <button class="btn btn-outline btn-small" id="prevPage">← PREVIOUS</button>
-          <button class="btn btn-outline btn-small" id="nextPage">NEXT →</button>
-        </div>
-      </div>
-      <div class="preview-page" id="previewPage">
-        <small>BLOCK ACADEMY / TRADING GUIDE</small>
-        <div><h3>A Practical Guide to Weather Markets on Polymarket</h3><p>Understand the market, its mechanics and the fundamentals of weather trading.</p></div>
-        <div class="page-bottom"><span>TRADING GUIDE / VOL. 001</span><span>01</span></div>
-      </div>
-    </div>
-    <p class="preview-note">Preview pages are currently illustrative placeholders. Replace them with genuine PDF page images when the final publication is ready.</p>
-  </div>
+<div class="container">
+<div class="section-heading">
+<div class="eyebrow">Inside the Publication</div>
+<h2>Take a look <span class="lime">inside.</span></h2>
+<p>Explore a sample before purchasing the complete guide.</p>
+</div>
+<div class="preview-shell">
+<div class="preview-toolbar">
+<span id="previewCounter">Preview page 1 of 3</span>
+<div class="preview-controls">
+<button class="btn btn-outline btn-small" id="prevPage">← PREVIOUS</button>
+<button class="btn btn-outline btn-small" id="nextPage">NEXT →</button>
+</div>
+</div>
+<div class="preview-page" id="previewPage">
+<small>BLOCK ACADEMY / TRADING GUIDE</small>
+<div><h3>A Practical Guide to Weather Markets on Polymarket</h3><p>Understand the market, its mechanics and the fundamentals of weather trading.</p></div>
+<div class="page-bottom"><span>TRADING GUIDE / VOL. 001</span><span>01</span></div>
+</div>
+</div>
+<p class="preview-note">Preview pages are currently illustrative placeholders. Replace them with genuine PDF page images when the final publication is ready.</p>
+</div>
 </section>
 
 <section class="content" id="reviews">
-  <div class="container">
-    <div class="section-heading">
-      <div class="eyebrow">Reader Feedback</div>
-      <h2>Built on <span class="lime">knowledge.</span></h2>
-      <p>Honest reader feedback will help us improve future publications.</p>
-    </div>
-    <div class="reviews-box">
-      <div class="stars">★★★★★</div>
-      <h3>Reader reviews are coming soon.</h3>
-      <p>Verified customer reviews will appear here as readers share their experiences.</p>
-    </div>
-  </div>
+<div class="container">
+<div class="section-heading">
+<div class="eyebrow">Reader Feedback</div>
+<h2>Built on <span class="lime">knowledge.</span></h2>
+<p>Honest reader feedback will help us improve future publications.</p>
+</div>
+<div class="reviews-box">
+<div class="stars">★★★★★</div>
+<h3>Reader reviews are coming soon.</h3>
+<p>Verified customer reviews will appear here as readers share their experiences.</p>
+</div>
+</div>
 </section>
 
 <section class="final-cta">
-  <div class="container">
-    <div class="eyebrow">Start Learning</div>
-    <h2>Better research.<br><span class="lime">Better decisions.</span></h2>
-    <p>Explore our first trading guide and take a deeper look at weather prediction markets.</p>
-    <button class="btn" id="ctaBuy">GET THE GUIDE — $0.50 ↗</button>
-  </div>
+<div class="container">
+<div class="eyebrow">Start Learning</div>
+<h2>Better research.<br><span class="lime">Better decisions.</span></h2>
+<p>Explore our first trading guide and take a deeper look at weather prediction markets.</p>
+<button class="btn" id="ctaBuy">GET THE GUIDE — $0.50 ↗</button>
+</div>
 </section>
-
 </main>
 
-<footer>
-  <div class="container">
-    <div class="footer-top">
-      <a class="logo" href="#">BLOCK <span>ACADEMY</span></a>
-      <div class="footer-links">
-        <a href="#about">About</a><a href="#guides">Publications</a><a href="#reviews">Reviews</a>
-        <a href="mailto:blockacademyusa@gmail.com">Contact</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <div>© <span id="year"></span> Block Academy</div>
-      <p class="disclaimer">Educational content only. Nothing published by Block Academy constitutes financial, investment or trading advice. Trading involves risk, including the possible loss of capital.</p>
-    </div>
-  </div>
-</footer>
+<footer><div class="container">
+<div class="footer-top">
+<a class="logo" href="#">BLOCK <span>ACADEMY</span></a>
+<div class="footer-links"><a href="#about">About</a><a href="#guides">Publications</a><a href="#reviews">Reviews</a><a href="mailto:blockacademyusa@gmail.com">Contact</a></div>
+</div>
+<div class="footer-bottom">
+<div>© <span id="year"></span> Block Academy</div>
+<p class="disclaimer">Educational content only. Nothing published by Block Academy constitutes financial, investment or trading advice. Trading involves risk, including the possible loss of capital.</p>
+</div>
+</div></footer>
 
-<!-- CHECKOUT -->
 <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
-  <div class="modal-card">
-    <div class="modal-header">
-      <div>
-        <div class="step-indicator" id="stepIndicator">STEP 01 / EMAIL</div>
-        <h2 id="checkoutTitle">Get the guide</h2>
-      </div>
-      <button class="close-modal" data-close aria-label="Close">✕</button>
-    </div>
+<div class="modal-card">
+<div class="modal-header">
+<div><div class="step-indicator" id="stepIndicator">STEP 01 / EMAIL</div><h2 id="checkoutTitle">Get the guide</h2></div>
+<button class="close-modal" data-close aria-label="Close">✕</button>
+</div>
 
-    <div id="stepEmail">
-      <p class="modal-copy">Enter your email address to begin creating your order.</p>
-      <form id="emailForm">
-        <label for="customerEmail">Email address</label>
-        <input id="customerEmail" type="email" placeholder="you@example.com" required autocomplete="email">
-        <button class="btn" type="submit">CONTINUE TO PAYMENT →</button>
-      </form>
-    </div>
+<div id="stepEmail">
+<p class="modal-copy">Enter your email address to begin creating your order.</p>
+<form id="emailForm">
+<label for="customerEmail">Email address</label>
+<input id="customerEmail" type="email" placeholder="you@example.com" required autocomplete="email">
+<button class="btn" type="submit">CONTINUE TO PAYMENT →</button>
+</form>
+</div>
 
-    <div id="stepMethod" class="hidden">
-      <p class="modal-copy">Guide price: <strong class="lime">$0.50 USD</strong>. Select your preferred payment method.</p>
-      <label for="paymentMethod">Payment method</label>
-      <select id="paymentMethod">
-        <option value="">Choose payment method</option>
-        <option value="crypto">Crypto wallet — BNB Chain</option>
-        <option value="binance_pay">Binance Pay</option>
-      </select>
-      <p class="modal-copy">Crypto options planned: BNB, USDT BEP-20 and USDC BEP-20.</p>
-      <button class="btn" id="methodContinue">CREATE ORDER →</button>
-      <p id="createOrderError" class="error-message hidden"></p>
-    </div>
+<div id="stepMethod" class="hidden">
+<p class="modal-copy">Guide price: <strong class="lime">$0.50 USD</strong>. Select your preferred payment method.</p>
+<label for="paymentMethod">Payment method</label>
+<select id="paymentMethod">
+<option value="">Choose payment method</option>
+<option value="crypto">Crypto wallet — BNB Chain</option>
+<option value="binance_pay">Binance Pay</option>
+</select>
 
-    <div id="stepCreated" class="hidden">
-      <div class="eyebrow">Order Created</div>
-      <h3 style="font-size:25px;margin:12px 0;">Your order has been registered.</h3>
-      <div class="warning">
-        <strong>Payments are not enabled yet.</strong><br>
-        Please do not send cryptocurrency or make a Binance Pay transfer. Payment verification and secure PDF delivery are still being configured.
-      </div>
-      <div class="status-panel">
-        <div class="status-label">AWAITING PAYMENT SYSTEM ACTIVATION</div>
-        <p>Order ID: <strong id="createdOrderId"></strong></p>
-        <p>Email: <strong id="createdEmail"></strong></p>
-        <p>Payment method: <strong id="createdMethod"></strong></p>
-        <p>Order expires: <strong id="createdExpiry"></strong></p>
-      </div>
-      <p class="modal-copy">Your order has been saved. Keep your order ID for reference. No payment has been taken.</p>
-      <button class="btn btn-outline" id="backToSite">BACK TO WEBSITE</button>
-    </div>
-  </div>
+<div id="cryptoCurrencyWrap" class="hidden">
+<label for="paymentCurrency">Payment currency</label>
+<select id="paymentCurrency">
+<option value="">Choose currency</option>
+<option value="BNB">BNB</option>
+<option value="USDT">USDT (BEP-20)</option>
+<option value="USDC">USDC (BEP-20)</option>
+</select>
+</div>
+<p id="paymentMethodNote" class="modal-copy">Choose a payment method to see the available payment options.</p>
+<button class="btn" id="methodContinue">CREATE ORDER →</button>
+<p id="createOrderError" class="error-message hidden"></p>
+</div>
+
+<div id="stepCreated" class="hidden">
+<div class="eyebrow">Order Created</div>
+<h3 style="font-size:25px;margin:12px 0;">Complete your payment</h3>
+<div class="status-panel">
+<div class="status-label">PAYMENT WINDOW — 30 MINUTES</div>
+<p>Order ID: <strong id="createdOrderId"></strong></p>
+<p>Email: <strong id="createdEmail"></strong></p>
+<p>Payment method: <strong id="createdMethod"></strong></p>
+<p>Amount: <strong>$0.50 USD</strong></p>
+<p>Time remaining:</p>
+<div class="countdown" id="paymentCountdown">30:00</div>
+</div>
+<div class="payment-instructions" id="cryptoInstructions">
+<p><strong>BNB Chain payment address</strong></p>
+<p id="walletAddress">0xf29D44F02a4cBD41e96718ed95183C9083D264a2</p>
+<p>Send only the selected currency on the BNB Smart Chain (BEP-20 for USDT/USDC). Confirm the amount equivalent to $0.50 before sending.</p>
+</div>
+<div class="payment-instructions hidden" id="binanceInstructions">
+<p><strong>Binance Pay UID</strong></p>
+<p>484951385</p>
+<p>Send exactly $0.50 USD through Binance Pay. Verify the recipient UID before confirming.</p>
+</div>
+<div class="warning">
+Payment is not automatically verified. Keep your transaction reference or Binance Pay receipt. Do not close this page until you have saved your order ID.
+</div>
+<p class="modal-copy" id="expiryMessage">Your payment window expires 30 minutes after order creation.</p>
+<button class="btn btn-outline" id="backToSite">BACK TO WEBSITE</button>
+</div>
+</div>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
-
 $("year").textContent = new Date().getFullYear();
 
-// Mobile navigation
-$("menuToggle").addEventListener("click", () => {
-  $("navLinks").classList.toggle("show");
-});
-document.querySelectorAll("#navLinks a").forEach(link => {
-  link.addEventListener("click", () => $("navLinks").classList.remove("show"));
-});
+$("menuToggle").addEventListener("click", () => $("navLinks").classList.toggle("show"));
+document.querySelectorAll("#navLinks a").forEach(link => link.addEventListener("click", () => $("navLinks").classList.remove("show")));
 
-// Preview pages
 const previewPages = [
-  {
-    kicker:"BLOCK ACADEMY / TRADING GUIDE",
-    title:"A Practical Guide to Weather Markets on Polymarket",
-    body:"Understand the market, its mechanics and the fundamentals of weather trading.",
-    footer:"TRADING GUIDE / VOL. 001"
-  },
-  {
-    kicker:"CONTENTS / VOLUME 001",
-    title:"Inside the Guide",
-    body:"Chapter 01 — Introduction to Polymarket<br>Chapter 02 — Buying Undervalued YES Outcomes<br>Chapter 03 — Late-Day NO Trading<br>Chapter 04 — High-Probability YES Combination<br>Chapter 05 — Risk Management and Trader Discipline",
-    footer:"CONTENTS"
-  },
-  {
-    kicker:"CHAPTER 01 / INTRODUCTION",
-    title:"Understanding Prediction Markets",
-    body:"Learn how YES and NO shares work, how prices reflect market expectations, and how positions are traded. The complete guide includes practical examples, research frameworks and risk-management considerations.",
-    footer:"SAMPLE PAGE"
-  }
+{kicker:"BLOCK ACADEMY / TRADING GUIDE",title:"A Practical Guide to Weather Markets on Polymarket",body:"Understand the market, its mechanics and the fundamentals of weather trading.",footer:"TRADING GUIDE / VOL. 001"},
+{kicker:"CONTENTS / VOLUME 001",title:"Inside the Guide",body:"Chapter 01 — Introduction to Polymarket<br>Chapter 02 — Buying Undervalued YES Outcomes<br>Chapter 03 — Late-Day NO Trading<br>Chapter 04 — High-Probability YES Combination<br>Chapter 05 — Risk Management and Trader Discipline",footer:"CONTENTS"},
+{kicker:"CHAPTER 01 / INTRODUCTION",title:"Understanding Prediction Markets",body:"Learn how YES and NO shares work, how prices reflect market expectations, and how positions are traded. The complete guide includes practical examples, research frameworks and risk-management considerations.",footer:"SAMPLE PAGE"}
 ];
-
 let previewIndex = 0;
-
-function renderPreview() {
-  const page = previewPages[previewIndex];
-  $("previewPage").innerHTML = `
-    <small>${page.kicker}</small>
-    <div><h3>${page.title}</h3><p>${page.body}</p></div>
-    <div class="page-bottom"><span>${page.footer}</span><span>0${previewIndex + 1}</span></div>
-  `;
-  $("previewCounter").textContent = `Preview page ${previewIndex + 1} of ${previewPages.length}`;
-  $("prevPage").disabled = previewIndex === 0;
-  $("nextPage").disabled = previewIndex === previewPages.length - 1;
+function renderPreview(){
+const page=previewPages[previewIndex];
+$("previewPage").innerHTML=`<small>${page.kicker}</small><div><h3>${page.title}</h3><p>${page.body}</p></div><div class="page-bottom"><span>${page.footer}</span><span>0${previewIndex+1}</span></div>`;
+$("previewCounter").textContent=`Preview page ${previewIndex+1} of ${previewPages.length}`;
+$("prevPage").disabled=previewIndex===0;
+$("nextPage").disabled=previewIndex===previewPages.length-1;
 }
-
-$("prevPage").addEventListener("click", () => {
-  if (previewIndex > 0) previewIndex--;
-  renderPreview();
-});
-$("nextPage").addEventListener("click", () => {
-  if (previewIndex < previewPages.length - 1) previewIndex++;
-  renderPreview();
-});
-$("previewOpen").addEventListener("click", () => {
-  $("preview").scrollIntoView({behavior:"smooth"});
-});
+$("prevPage").addEventListener("click",()=>{if(previewIndex>0)previewIndex--;renderPreview()});
+$("nextPage").addEventListener("click",()=>{if(previewIndex<previewPages.length-1)previewIndex++;renderPreview()});
+$("previewOpen").addEventListener("click",()=>$("preview").scrollIntoView({behavior:"smooth"}));
 renderPreview();
 
-// Checkout
-let customerEmail = "";
-let paymentMethod = "";
+let customerEmail="";
+let countdownInterval=null;
+let paymentExpiry=null;
 
-function openModal() {
-  $("checkoutModal").classList.add("open");
-  document.body.classList.add("modal-open");
-  showStep("stepEmail", "STEP 01 / EMAIL", "Get the guide");
-  $("createOrderError").classList.add("hidden");
+function openModal(){
+$("checkoutModal").classList.add("open");
+document.body.classList.add("modal-open");
+showStep("stepEmail","STEP 01 / EMAIL","Get the guide");
+$("createOrderError").classList.add("hidden");
+}
+function closeModal(){
+$("checkoutModal").classList.remove("open");
+document.body.classList.remove("modal-open");
+}
+function showStep(id,indicator,title){
+["stepEmail","stepMethod","stepCreated"].forEach(step=>$(step).classList.add("hidden"));
+$(id).classList.remove("hidden");
+$("stepIndicator").textContent=indicator;
+$("checkoutTitle").textContent=title;
+}
+$("buyOpen").addEventListener("click",openModal);
+$("ctaBuy").addEventListener("click",openModal);
+document.querySelectorAll("[data-close]").forEach(button=>button.addEventListener("click",closeModal));
+$("checkoutModal").addEventListener("click",event=>{if(event.target===$("checkoutModal"))closeModal()});
+
+$("emailForm").addEventListener("submit",event=>{
+event.preventDefault();
+customerEmail=$("customerEmail").value.trim().toLowerCase();
+if(!customerEmail)return;
+showStep("stepMethod","STEP 02 / PAYMENT METHOD","Choose payment");
+});
+
+$("paymentMethod").addEventListener("change",()=>{
+const method=$("paymentMethod").value;
+$("cryptoCurrencyWrap").classList.toggle("hidden",method!=="crypto");
+$("paymentMethodNote").textContent=method==="crypto"
+?"Choose BNB, USDT BEP-20 or USDC BEP-20. Use the BNB Chain wallet shown after order creation."
+:method==="binance_pay"
+?"You will receive the Binance Pay UID after creating your order."
+:"Choose a payment method to see the available payment options.";
+});
+
+function startCountdown(expiry){
+if(countdownInterval)clearInterval(countdownInterval);
+paymentExpiry=new Date(expiry).getTime();
+function update(){
+const remaining=Math.max(0,paymentExpiry-Date.now());
+const minutes=Math.floor(remaining/60000);
+const seconds=Math.floor((remaining%60000)/1000);
+$("paymentCountdown").textContent=String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0");
+if(remaining<=0){
+clearInterval(countdownInterval);
+$("paymentCountdown").textContent="EXPIRED";
+$("expiryMessage").textContent="This payment window has expired. Do not send payment for this order.";
+}
+}
+update();
+countdownInterval=setInterval(update,1000);
 }
 
-function closeModal() {
-  $("checkoutModal").classList.remove("open");
-  document.body.classList.remove("modal-open");
+$("methodContinue").addEventListener("click",async()=>{
+const method=$("paymentMethod").value;
+const currency=method==="crypto"?$("paymentCurrency").value:"BINANCE_PAY";
+
+if(!method){
+$("createOrderError").textContent="Please select a payment method.";
+$("createOrderError").classList.remove("hidden");
+return;
+}
+if(method==="crypto"&&!currency){
+$("createOrderError").textContent="Please select a cryptocurrency.";
+$("createOrderError").classList.remove("hidden");
+return;
 }
 
-function showStep(id, indicator, title) {
-  ["stepEmail","stepMethod","stepCreated"].forEach(step => {
-    $(step).classList.add("hidden");
-  });
-  $(id).classList.remove("hidden");
-  $("stepIndicator").textContent = indicator;
-  $("checkoutTitle").textContent = title;
+const button=$("methodContinue");
+button.disabled=true;
+button.textContent="CREATING ORDER...";
+$("createOrderError").classList.add("hidden");
+
+try{
+const response=await fetch("/api/create-order",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+email:customerEmail,
+payment_method:method,
+payment_currency:currency
+})
+});
+const result=await response.json();
+
+if(!response.ok||!result.success){
+throw new Error(result.error||"Could not create your order. Please try again.");
 }
 
-$("buyOpen").addEventListener("click", openModal);
-$("ctaBuy").addEventListener("click", openModal);
+$("createdOrderId").textContent=result.order_id;
+$("createdEmail").textContent=result.email||customerEmail;
+$("createdMethod").textContent=method==="crypto"?"Crypto — "+currency:"Binance Pay";
+$("cryptoInstructions").classList.toggle("hidden",method!=="crypto");
+$("binanceInstructions").classList.toggle("hidden",method!=="binance_pay");
 
-document.querySelectorAll("[data-close]").forEach(button => {
-  button.addEventListener("click", closeModal);
+const expiry=result.payment_expires_at;
+if(!expiry)throw new Error("The server did not return a payment expiry time.");
+startCountdown(expiry);
+showStep("stepCreated","STEP 03 / PAYMENT","Complete your payment");
+
+}catch(error){
+$("createOrderError").textContent=error.message||"Something went wrong. Please try again.";
+$("createOrderError").classList.remove("hidden");
+}finally{
+button.disabled=false;
+button.textContent="CREATE ORDER →";
+}
 });
 
-$("checkoutModal").addEventListener("click", event => {
-  if (event.target === $("checkoutModal")) closeModal();
-});
-
-$("emailForm").addEventListener("submit", event => {
-  event.preventDefault();
-  customerEmail = $("customerEmail").value.trim().toLowerCase();
-
-  if (!customerEmail) return;
-
-  showStep("stepMethod", "STEP 02 / PAYMENT METHOD", "Choose payment");
-});
-
-$("methodContinue").addEventListener("click", async () => {
-  paymentMethod = $("paymentMethod").value;
-
-  if (!paymentMethod) {
-    $("createOrderError").textContent = "Please select a payment method.";
-    $("createOrderError").classList.remove("hidden");
-    return;
-  }
-
-  const button = $("methodContinue");
-  button.disabled = true;
-  button.textContent = "CREATING ORDER...";
-  $("createOrderError").classList.add("hidden");
-
-  try {
-    const response = await fetch("/api/create-order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: customerEmail,
-        payment_method: paymentMethod
-      })
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || !result.ok) {
-      throw new Error(result.error || "Could not create your order. Please try again.");
-    }
-
-    $("createdOrderId").textContent = result.order_id;
-    $("createdEmail").textContent = customerEmail;
-    $("createdMethod").textContent =
-      paymentMethod === "crypto" ? "Crypto wallet — BNB Chain" : "Binance Pay";
-
-    $("createdExpiry").textContent = result.expires_at
-      ? new Date(result.expires_at).toLocaleString()
-      : "Not available";
-
-    showStep("stepCreated", "STEP 03 / ORDER CREATED", "Order registered");
-
-  } catch (error) {
-    $("createOrderError").textContent =
-      error.message || "Something went wrong. Please try again.";
-    $("createOrderError").classList.remove("hidden");
-  } finally {
-    button.disabled = false;
-    button.textContent = "CREATE ORDER →";
-  }
-});
-
-$("backToSite").addEventListener("click", closeModal);
+$("backToSite").addEventListener("click",closeModal);
 </script>
-
 </body>
 </html>
