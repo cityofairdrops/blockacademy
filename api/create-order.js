@@ -1,77 +1,112 @@
 
 export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;
-  const secretKey = process.env.SUPABASE_SECRET_KEY;
+  const supabaseKey = process.env.SUPABASE_SECRET_KEY;
 
-  if (!supabaseUrl || !secretKey) {
-    return res.status(500).json({ error: "Server configuration error" });
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({
+      error: "Server configuration error"
+    });
   }
 
+  const {
+    email,
+    payment_method,
+    payment_currency
+  } = req.body || {};
+
+  if (
+    typeof email !== "string" ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+  ) {
+    return res.status(400).json({ error: "Enter a valid email address." });
+  }
+
+  const allowedCurrencies = {
+    crypto: ["BNB", "USDT", "USDC"],
+    binance_pay: ["BINANCE_PAY"]
+  };
+
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      allowedCurrencies,
+      payment_method
+    ) ||
+    !allowedCurrencies[payment_method].includes(payment_currency)
+  ) {
+    return res.status(400).json({
+      error: "Invalid payment method or currency."
+    });
+  }
+
+  const baseUrl = supabaseUrl.replace(/\/+$/, "");
+  const now = new Date();
+  const expiresAt = new Date(
+    now.getTime() + 30 * 60 * 1000
+  ).toISOString();
+
   try {
-    const { email, payment_method } = req.body || {};
+    const trackingToken = Array.from(
+      crypto.getRandomValues(new Uint8Array(32))
+    ).map(byte => byte.toString(16).padStart(2, "0")).join("");
 
-    const cleanEmail = String(email || "").trim().toLowerCase();
+    const response = await fetch(`${baseUrl}/rest/v1/orders`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation"
+      },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        product_slug: "trading-guide-weather-markets",
+        amount_usd: 0.5,
+        payment_method,
+        payment_currency,
+        status: "awaiting_payment",
+        payment_expires_at: expiresAt,
+        tracking_token: trackingToken
+      })
+    });
 
-    if (
-      cleanEmail.length > 254 ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)
-    ) {
-      return res.status(400).json({ error: "Enter a valid email address." });
+    if (!response.ok) {
+      console.error("Order creation failed:", await response.text());
+      return res.status(502).json({
+        error: "Unable to create order."
+      });
     }
 
-    if (!["crypto", "binance_pay"].includes(payment_method)) {
-      return res.status(400).json({ error: "Invalid payment method." });
+    const orders = await response.json();
+    const order = orders[0];
+
+    if (!order) {
+      return res.status(500).json({
+        error: "Order creation returned no record."
+      });
     }
-
-    // Payment window begins when the server creates the order.
-    const minutes = payment_method === "crypto" ? 10 : 15;
-    const expiresAt = new Date(Date.now() + minutes * 60 * 1000).toISOString();
-
-    const response = await fetch(
-      `${supabaseUrl}/rest/v1/orders`,
-      {
-        method: "POST",
-        headers: {
-          apikey: secretKey,
-          Authorization: `Bearer ${secretKey}`,
-          "Content-Type": "application/json",
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify({
-          email: cleanEmail,
-          product_slug: "weather-markets-guide",
-          amount_usd: 0.50,
-          payment_method,
-          status: "awaiting_payment",
-          payment_expires_at: expiresAt
-        })
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok || !Array.isArray(result) || !result[0]) {
-      console.error("Order creation failed:", result);
-      return res.status(500).json({ error: "Could not create your order." });
-    }
-
-    const order = result[0];
 
     return res.status(201).json({
-      ok: true,
+      success: true,
       order_id: order.id,
-      tracking_token: order.tracking_token,
-      expires_at: order.payment_expires_at,
+      tracking_token: trackingToken,
+      email: order.email,
       amount_usd: order.amount_usd,
-      payment_method: order.payment_method
+      payment_method: order.payment_method,
+      payment_currency: order.payment_currency,
+      payment_expires_at: order.payment_expires_at
     });
 
   } catch (error) {
     console.error("Create order error:", error);
-    return res.status(500).json({ error: "Unexpected server error." });
+    return res.status(500).json({
+      error: "Unexpected server error."
+    });
   }
 }
