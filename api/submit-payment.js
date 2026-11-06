@@ -62,7 +62,9 @@ export default async function handler(req, res) {
     transaction_reference.trim().length < 5 ||
     transaction_reference.trim().length > 200
   ) {
-    return res.status(400).json({ error: "Enter a valid transaction reference" });
+    return res.status(400).json({
+      error: "Enter a valid transaction reference"
+    });
   }
 
   const baseUrl = supabaseUrl.replace(/\/+$/, "");
@@ -78,13 +80,16 @@ export default async function handler(req, res) {
     orderUrl.searchParams.set("tracking_token", `eq.${tracking_token}`);
     orderUrl.searchParams.set(
       "select",
-      "id,status,payment_method,payment_expires_at"
+      "id,status,payment_method,payment_currency,payment_expires_at"
     );
 
     const orderResponse = await fetch(orderUrl, { headers });
 
     if (!orderResponse.ok) {
-      return res.status(502).json({ error: "Could not verify the order" });
+      console.error("Order lookup failed:", await orderResponse.text());
+      return res.status(502).json({
+        error: "Could not verify the order"
+      });
     }
 
     const orders = await orderResponse.json();
@@ -100,9 +105,12 @@ export default async function handler(req, res) {
       });
     }
 
-    if (order.payment_method !== payment_method) {
+    if (
+      order.payment_method !== payment_method ||
+      order.payment_currency !== payment_currency
+    ) {
       return res.status(400).json({
-        error: "Payment method does not match this order"
+        error: "Payment method or currency does not match this order"
       });
     }
 
@@ -110,7 +118,9 @@ export default async function handler(req, res) {
       !order.payment_expires_at ||
       new Date(order.payment_expires_at).getTime() <= Date.now()
     ) {
-      return res.status(410).json({ error: "Payment window has expired" });
+      return res.status(410).json({
+        error: "Payment window has expired"
+      });
     }
 
     const submissionResponse = await fetch(
@@ -132,6 +142,7 @@ export default async function handler(req, res) {
 
     if (!submissionResponse.ok) {
       const details = await submissionResponse.text();
+      console.error("Payment submission insert failed:", details);
 
       if (submissionResponse.status === 409) {
         return res.status(409).json({
@@ -139,12 +150,19 @@ export default async function handler(req, res) {
         });
       }
 
-      console.error("Payment submission insert failed:", details);
-      return res.status(500).json({ error: "Could not save payment submission" });
+      return res.status(500).json({
+        error: "Could not save payment submission"
+      });
     }
 
     const submissions = await submissionResponse.json();
     const submission = submissions[0];
+
+    if (!submission) {
+      return res.status(500).json({
+        error: "Payment submission was not saved"
+      });
+    }
 
     const updateUrl = new URL(`${baseUrl}/rest/v1/orders`);
     updateUrl.searchParams.set("id", `eq.${order_id}`);
@@ -157,7 +175,9 @@ export default async function handler(req, res) {
         ...headers,
         Prefer: "return=representation"
       },
-      body: JSON.stringify({ status: "payment_submitted" })
+      body: JSON.stringify({
+        status: "payment_submitted"
+      })
     });
 
     const updatedOrders = updateResponse.ok
@@ -183,8 +203,11 @@ export default async function handler(req, res) {
       message: "Payment submitted successfully. Your payment is awaiting review.",
       status: "payment_submitted"
     });
+
   } catch (error) {
     console.error("Submit payment error:", error);
-    return res.status(500).json({ error: "Unexpected server error" });
+    return res.status(500).json({
+      error: "Unexpected server error"
+    });
   }
 }
