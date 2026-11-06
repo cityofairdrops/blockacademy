@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard | Block Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 24px;
+      background: #080a09; color: #f4f4f0;
+      font-family: 'Josefin Sans', sans-serif;
+    }
+    .container { max-width: 1150px; margin: auto; }
+    .brand { color: #c6f36b; font-weight: 700; letter-spacing: 3px; }
+    h1 { margin: 12px 0 8px; }
+    .muted { color: #92968c; }
+    .panel {
+      background: #111511; border: 1px solid #283027;
+      border-radius: 12px; padding: 22px; margin-top: 22px;
+    }
+    input, button {
+      font: inherit; border-radius: 7px; padding: 12px;
+    }
+    input {
+      width: 100%; background: #080a09; color: white;
+      border: 1px solid #394237; margin: 7px 0 14px;
+    }
+    button {
+      border: 0; cursor: pointer; font-weight: 600;
+      background: #c6f36b; color: #10140b;
+    }
+    button.secondary { background: #293126; color: white; }
+    button.reject { background: #6d2929; color: white; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .hidden { display: none !important; }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .stat { background: #171d16; padding: 16px; border-radius: 8px; }
+    .stat strong { display: block; font-size: 25px; margin-top: 8px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 850px; }
+    th, td { text-align: left; padding: 13px 10px; border-bottom: 1px solid #293027; vertical-align: top; }
+    th { color: #c6f36b; font-size: 13px; }
+    td { font-size: 14px; }
+    .actions { display: flex; gap: 7px; flex-wrap: wrap; }
+    .actions button { padding: 8px 10px; font-size: 12px; }
+    .status { color: #c6f36b; }
+    #message { margin-top: 14px; color: #c6f36b; }
+    @media(max-width:650px) {
+      body { padding: 15px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .panel { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+<main class="container">
+  <div class="brand">BLOCK ACADEMY</div>
+  <h1>Admin Dashboard</h1>
+  <p class="muted">Orders, payments and customer management</p>
+
+  <section id="loginPanel" class="panel">
+    <h2>Administrator Login</h2>
+    <form id="loginForm">
+      <label>Email address</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label>Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button type="submit" id="loginButton">Sign in</button>
+    </form>
+    <p id="loginMessage" class="muted"></p>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <div class="top">
+      <p class="muted" id="adminEmail"></p>
+      <div>
+        <button class="secondary" id="refreshButton">Refresh</button>
+        <button class="secondary" id="logoutButton">Log out</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">Total orders<strong id="totalOrders">0</strong></div>
+      <div class="stat">Awaiting review<strong id="pendingOrders">0</strong></div>
+      <div class="stat">Approved<strong id="approvedOrders">0</strong></div>
+      <div class="stat">Completed<strong id="completedOrders">0</strong></div>
+    </div>
+
+    <div class="panel">
+      <div class="top">
+        <h2>Customer Orders</h2>
+        <input id="search" placeholder="Search email or order ID" style="max-width:300px">
+      </div>
+      <p class="muted">Review submitted payment references and make a decision.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Order / Customer</th>
+              <th>Amount</th>
+              <th>Payment</th>
+              <th>Transaction reference</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody">
+            <tr><td colspan="6">Loading orders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="message"></p>
+    </div>
+  </section>
+</main>
+
+<script>
+(async function () {
+  const $ = id => document.getElementById(id);
+  let supabaseClient;
+  let currentSession;
+  let allOrders = [];
+  let allSubmissions = [];
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#039;"
+    })[char]);
+  }
+
+  function showMessage(message, isError = false) {
+    $("message").textContent = message;
+    $("message").style.color = isError ? "#ff8888" : "#c6f36b";
+  }
+
+  async function initialize() {
+    try {
+      const response = await fetch("/api/admin-config.js");
+      if (!response.ok) throw new Error("Could not load Supabase configuration.");
+
+      const config = await response.json();
+      supabaseClient = window.supabase.createClient(
+        config.supabaseUrl,
+        config.publishableKey
+      );
+
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) throw error;
+
+      if (data.session) {
+        currentSession = data.session;
+        await openDashboard();
+      }
+    } catch (error) {
+      $("loginMessage").textContent = error.message;
+    }
+  }
+
+  $("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    $("loginButton").disabled = true;
+    $("loginMessage").textContent = "Signing in...";
+
+    try {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: $("email").value.trim(),
+        password: $("password").value
+      });
+
+      if (error) throw error;
+
+      currentSession = data.session;
+      await openDashboard();
+    } catch (error) {
+      $("loginMessage").textContent = error.message;
+    } finally {
+      $("loginButton").disabled = false;
+    }
+  });
+
+  async function apiFetch(path, options = {}) {
+    const { data } = await supabaseClient.auth.getSession();
+    const session = data.session;
+
+    if (!session) throw new Error("Your session has expired. Please log in again.");
+
+    currentSession = session;
+
+    const response = await fetch(path, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) throw new Error(result.error || "Request failed");
+    return result;
+  }
+
+  async function openDashboard() {
+    $("loginPanel").classList.add("hidden");
+    $("dashboard").classList.remove("hidden");
+    $("adminEmail").textContent = currentSession.user.email || "Administrator";
+    await loadOrders();
+  }
+
+  async function loadOrders() {
+    $("ordersBody").innerHTML = '<tr><td colspan="6">Loading orders...</td></tr>';
+    showMessage("");
+
+    try {
+      const result = await apiFetch("/api/admin-orders.js");
+      allOrders = result.orders || [];
+      allSubmissions = result.payment_submissions || [];
+
+      $("totalOrders").textContent = allOrders.length;
+      $("pendingOrders").textContent = allOrders.filter(o =>
+        ["payment_submitted", "under_review"].includes(o.status)
+      ).length;
+      $("approvedOrders").textContent = allOrders.filter(o => o.status === "approved").length;
+      $("completedOrders").textContent = allOrders.filter(o => o.status === "completed").length;
+
+      renderOrders();
+    } catch (error) {
+      $("ordersBody").innerHTML = `<tr><td colspan="6">${escapeHtml(error.message)}</td></tr>`;
+      showMessage(error.message, true);
+    }
+  }
+
+  function renderOrders() {
+    const query = $("search").value.toLowerCase().trim();
+    const filtered = allOrders.filter(order =>
+      order.email.toLowerCase().includes(query) ||
+      order.id.toLowerCase().includes(query)
+    );
+
+    if (!filtered.length) {
+      $("ordersBody").innerHTML = '<tr><td colspan="6">No matching orders.</td></tr>';
+      return;
+    }
+
+    $("ordersBody").innerHTML = filtered.map(order => {
+      const submission = allSubmissions.find(s => s.order_id === order.id);
+      const reference = submission?.transaction_reference || "Not submitted";
+      const canReview = submission?.review_status === "pending" &&
+        ["payment_submitted", "under_review"].includes(order.status);
+
+      return `
+        <tr>
+          <td>
+            <strong>${escapeHtml(order.email)}</strong><br>
+            <small>${escapeHtml(order.id)}</small>
+          </td>
+          <td>$${escapeHtml(order.amount_usd)}</td>
+          <td>${escapeHtml(order.payment_method || "-")}<br>
+              ${escapeHtml(order.payment_currency || "-")}</td>
+          <td>
+            ${escapeHtml(reference)}<br>
+            <small>${escapeHtml(submission?.review_status || "-")}</small>
+          </td>
+          <td class="status">${escapeHtml(order.status)}</td>
+          <td>
+            ${canReview ? `
+              <div class="actions">
+                <button data-action="approved" data-id="${escapeHtml(submission.id)}">Approve</button>
+                <button class="reject" data-action="rejected" data-id="${escapeHtml(submission.id)}">Reject</button>
+              </div>
+            ` : "-"}
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  $("ordersBody").addEventListener("click", async event => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+
+    const decision = button.dataset.action;
+    const submissionId = button.dataset.id;
+
+    const note = prompt(
+      decision === "approved"
+        ? "Optional approval note:"
+        : "Reason for rejecting this payment:"
+    );
+
+    if (note === null) return;
+
+    if (decision === "rejected" && !note.trim()) {
+      alert("Please enter a rejection reason.");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to ${decision} this payment?`)) return;
+
+    button.disabled = true;
+    showMessage("Saving decision...");
+
+    try {
+      const result = await apiFetch("/api/admin-review-payment.js", {
+        method: "POST",
+        body: JSON.stringify({
+          submission_id: submissionId,
+          decision,
+          admin_note: note
+        })
+      });
+
+      showMessage(result.message || "Decision saved.");
+      await loadOrders();
+    } catch (error) {
+      showMessage(error.message, true);
+      button.disabled = false;
+    }
+  });
+
+  $("search").addEventListener("input", renderOrders);
+  $("refreshButton").addEventListener("click", loadOrders);
+
+  $("logoutButton").addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+    currentSession = null;
+    $("dashboard").classList.add("hidden");
+    $("loginPanel").classList.remove("hidden");
+    $("password").value = "";
+  });
+
+  await initialize();
+})();
+</script>
+</body>
+</html>
