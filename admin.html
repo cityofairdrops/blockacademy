@@ -142,7 +142,7 @@
 
   async function initialize() {
     try {
-      const response = await fetch("/api/admin-config.js");
+      const response = await fetch("/api/admin-config");
       if (!response.ok) throw new Error("Could not load Supabase configuration.");
 
       const config = await response.json();
@@ -220,7 +220,7 @@
     showMessage("");
 
     try {
-      const result = await apiFetch("/api/admin-orders.js");
+      const result = await apiFetch("/api/admin-orders");
       allOrders = result.orders || [];
       allSubmissions = result.payment_submissions || [];
 
@@ -309,7 +309,7 @@
     showMessage("Saving decision...");
 
     try {
-      const result = await apiFetch("/api/admin-review-payment.js", {
+      const result = await apiFetch("/api/admin-review-payment", {
         method: "POST",
         body: JSON.stringify({
           submission_id: submissionId,
