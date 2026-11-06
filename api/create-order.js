@@ -1,4 +1,11 @@
 
+const PRODUCTS = {
+  "trading-guide-weather-markets": {
+    title: "Trading Guide — A Practical Guide to Weather Markets on Polymarket",
+    price: 0.50
+  }
+};
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
@@ -18,14 +25,30 @@ export default async function handler(req, res) {
   const {
     email,
     payment_method,
-    payment_currency
+    payment_currency,
+    product_slug
   } = req.body || {};
 
   if (
     typeof email !== "string" ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
   ) {
-    return res.status(400).json({ error: "Enter a valid email address." });
+    return res.status(400).json({
+      error: "Enter a valid email address."
+    });
+  }
+
+  const selectedSlug =
+    typeof product_slug === "string" && product_slug.trim()
+      ? product_slug.trim()
+      : "trading-guide-weather-markets";
+
+  const product = PRODUCTS[selectedSlug];
+
+  if (!product) {
+    return res.status(400).json({
+      error: "This PDF product is unavailable."
+    });
   }
 
   const allowedCurrencies = {
@@ -46,15 +69,17 @@ export default async function handler(req, res) {
   }
 
   const baseUrl = supabaseUrl.replace(/\/+$/, "");
-  const now = new Date();
+
   const expiresAt = new Date(
-    now.getTime() + 30 * 60 * 1000
+    Date.now() + 30 * 60 * 1000
   ).toISOString();
 
   try {
     const trackingToken = Array.from(
       crypto.getRandomValues(new Uint8Array(32))
-    ).map(byte => byte.toString(16).padStart(2, "0")).join("");
+    )
+      .map(byte => byte.toString(16).padStart(2, "0"))
+      .join("");
 
     const response = await fetch(`${baseUrl}/rest/v1/orders`, {
       method: "POST",
@@ -66,8 +91,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         email: email.trim().toLowerCase(),
-        product_slug: "trading-guide-weather-markets",
-        amount_usd: 0.5,
+        product_slug: selectedSlug,
+        amount_usd: product.price,
         payment_method,
         payment_currency,
         status: "awaiting_payment",
@@ -77,7 +102,11 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      console.error("Order creation failed:", await response.text());
+      console.error(
+        "Order creation failed:",
+        await response.text()
+      );
+
       return res.status(502).json({
         error: "Unable to create order."
       });
@@ -97,6 +126,8 @@ export default async function handler(req, res) {
       order_id: order.id,
       tracking_token: trackingToken,
       email: order.email,
+      product_slug: order.product_slug,
+      product_title: product.title,
       amount_usd: order.amount_usd,
       payment_method: order.payment_method,
       payment_currency: order.payment_currency,
@@ -105,6 +136,7 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error("Create order error:", error);
+
     return res.status(500).json({
       error: "Unexpected server error."
     });
