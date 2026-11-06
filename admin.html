@@ -9,7 +9,7 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;padding:22px;background:#080a09;color:#f4f4f0;font-family:'Josefin Sans',sans-serif}
-.container{max-width:1150px;margin:auto}
+.container{max-width:1250px;margin:auto}
 .brand{color:#c6f36b;font-weight:700;letter-spacing:3px}
 .muted{color:#92968c}
 .panel{background:#111511;border:1px solid #283027;border-radius:12px;padding:22px;margin-top:22px}
@@ -25,20 +25,27 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .stat{background:#171d16;padding:16px;border-radius:8px}
 .stat strong{display:block;font-size:25px;margin-top:8px}
 .table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:850px}
+table{width:100%;border-collapse:collapse;min-width:1050px}
 th,td{text-align:left;padding:13px 10px;border-bottom:1px solid #293027;vertical-align:top}
 th{color:#c6f36b;font-size:13px}
 td{font-size:14px}
 .actions{display:flex;gap:7px;flex-wrap:wrap}
 .actions button{padding:8px 10px;font-size:12px}
 .status{color:#c6f36b}
+.product-title{font-weight:600;color:#f4f4f0;line-height:1.5}
+.product-slug{display:block;color:#92968c;font-size:11px;margin-top:5px;overflow-wrap:anywhere}
 #message{margin-top:14px;color:#c6f36b}
 #loginMessage{white-space:pre-wrap;overflow-wrap:anywhere}
-@media(max-width:650px){body{padding:15px}.stats{grid-template-columns:repeat(2,1fr)}.panel{padding:15px}}
+@media(max-width:650px){
+ body{padding:15px}
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .panel{padding:15px}
+}
 </style>
 </head>
 <body>
 <main class="container">
+
 <div class="brand">BLOCK ACADEMY</div>
 <h1>Admin Dashboard</h1>
 <p class="muted">Orders, payments and customer management</p>
@@ -56,6 +63,7 @@ td{font-size:14px}
 </section>
 
 <section id="dashboard" class="hidden">
+
 <div class="top">
 <p class="muted" id="adminEmail"></p>
 <div>
@@ -63,43 +71,69 @@ td{font-size:14px}
 <button class="secondary" id="logoutButton">Log out</button>
 </div>
 </div>
+
 <div class="stats">
 <div class="stat">Total orders<strong id="totalOrders">0</strong></div>
 <div class="stat">Awaiting review<strong id="pendingOrders">0</strong></div>
 <div class="stat">Approved<strong id="approvedOrders">0</strong></div>
 <div class="stat">Completed<strong id="completedOrders">0</strong></div>
 </div>
+
 <div class="panel">
 <div class="top">
 <h2>Customer Orders</h2>
-<input id="search" placeholder="Search email or order ID" style="max-width:300px">
+<input id="search" placeholder="Search email, product or order ID" style="max-width:330px">
 </div>
-<p class="muted">Review submitted payment references and make a decision.</p>
+
+<p class="muted">Review the selected PDF, submitted payment references and make a decision.</p>
+
 <div class="table-wrap">
 <table>
-<thead><tr>
-<th>Order / Customer</th><th>Amount</th><th>Payment</th>
-<th>Transaction reference</th><th>Status</th><th>Action</th>
-</tr></thead>
-<tbody id="ordersBody"><tr><td colspan="6">Loading orders...</td></tr></tbody>
+<thead>
+<tr>
+<th>Order / Customer</th>
+<th>PDF / Product</th>
+<th>Amount</th>
+<th>Payment</th>
+<th>Transaction reference</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="ordersBody">
+<tr><td colspan="7">Loading orders...</td></tr>
+</tbody>
 </table>
 </div>
+
 <p id="message"></p>
 </div>
 </section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const $ = id => document.getElementById(id);
+
 let supabaseClient = null;
 let currentSession = null;
 let allOrders = [];
 let allSubmissions = [];
 
+// Add future PDF products here using their exact product_slug.
+const PRODUCT_TITLES = {
+ "trading-guide-weather-markets":
+  "Trading Guide — A Practical Guide to Weather Markets on Polymarket"
+};
+
 function escapeHtml(value) {
  return String(value ?? "").replace(/[&<>"']/g, c => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
  })[c]);
 }
 
@@ -148,6 +182,7 @@ async function initialize() {
    currentSession=data.session;
    await openDashboard();
   }
+
  } catch(error) {
   $("loginMessage").textContent="LOGIN INITIALIZATION FAILED:\n"+error.message;
   $("loginButton").disabled=true;
@@ -167,10 +202,12 @@ $("loginForm").addEventListener("submit",async event=>{
    email:$("email").value.trim(),
    password:$("password").value
   });
+
   if(error)throw error;
 
   currentSession=data.session;
   await openDashboard();
+
  } catch(error) {
   $("loginMessage").textContent="LOGIN FAILED:\n"+error.message;
  } finally {
@@ -181,6 +218,7 @@ $("loginForm").addEventListener("submit",async event=>{
 
 async function apiFetch(path,options={}) {
  const {data,error}=await supabaseClient.auth.getSession();
+
  if(error)throw error;
  if(!data.session)throw new Error("Session expired. Please log in again.");
 
@@ -196,7 +234,11 @@ async function apiFetch(path,options={}) {
  });
 
  const result=await response.json().catch(()=>({}));
- if(!response.ok)throw new Error(result.error||"Request failed: "+response.status);
+
+ if(!response.ok) {
+  throw new Error(result.error||"Request failed: "+response.status);
+ }
+
  return result;
 }
 
@@ -208,54 +250,106 @@ async function openDashboard() {
 }
 
 async function loadOrders() {
- $("ordersBody").innerHTML='<tr><td colspan="6">Loading orders...</td></tr>';
+ $("ordersBody").innerHTML='<tr><td colspan="7">Loading orders...</td></tr>';
  showMessage("");
 
  try {
   const result=await apiFetch("/api/admin-orders");
+
   allOrders=result.orders||[];
   allSubmissions=result.payment_submissions||[];
 
   $("totalOrders").textContent=allOrders.length;
+
   $("pendingOrders").textContent=allOrders.filter(o=>
-   ["payment_submitted","under_review"].includes(o.status)).length;
-  $("approvedOrders").textContent=allOrders.filter(o=>o.status==="approved").length;
-  $("completedOrders").textContent=allOrders.filter(o=>o.status==="completed").length;
+   ["payment_submitted","under_review"].includes(o.status)
+  ).length;
+
+  $("approvedOrders").textContent=allOrders.filter(o=>
+   o.status==="approved"
+  ).length;
+
+  $("completedOrders").textContent=allOrders.filter(o=>
+   o.status==="completed"
+  ).length;
 
   renderOrders();
+
  } catch(error) {
-  $("ordersBody").innerHTML=`<tr><td colspan="6">${escapeHtml(error.message)}</td></tr>`;
+  $("ordersBody").innerHTML=
+   `<tr><td colspan="7">${escapeHtml(error.message)}</td></tr>`;
+
   showMessage(error.message,true);
  }
 }
 
 function renderOrders() {
  const query=$("search").value.toLowerCase().trim();
- const filtered=allOrders.filter(o=>
-  (o.email||"").toLowerCase().includes(query)||
-  (o.id||"").toLowerCase().includes(query)
- );
+
+ const filtered=allOrders.filter(o=>{
+  const productTitle=PRODUCT_TITLES[o.product_slug]||o.product_slug||"";
+
+  return (
+   (o.email||"").toLowerCase().includes(query)||
+   (o.id||"").toLowerCase().includes(query)||
+   productTitle.toLowerCase().includes(query)||
+   (o.product_slug||"").toLowerCase().includes(query)
+  );
+ });
 
  if(!filtered.length) {
-  $("ordersBody").innerHTML='<tr><td colspan="6">No matching orders.</td></tr>';
+  $("ordersBody").innerHTML=
+   '<tr><td colspan="7">No matching orders.</td></tr>';
   return;
  }
 
  $("ordersBody").innerHTML=filtered.map(order=>{
   const submission=allSubmissions.find(s=>s.order_id===order.id);
+
   const canReview=submission?.review_status==="pending"&&
    ["payment_submitted","under_review"].includes(order.status);
 
+  const productTitle=
+   PRODUCT_TITLES[order.product_slug]||
+   order.product_slug||
+   "Unknown product";
+
   return `<tr>
-   <td><strong>${escapeHtml(order.email)}</strong><br><small>${escapeHtml(order.id)}</small></td>
+
+   <td>
+    <strong>${escapeHtml(order.email)}</strong>
+    <br>
+    <small>${escapeHtml(order.id)}</small>
+   </td>
+
+   <td>
+    <span class="product-title">${escapeHtml(productTitle)}</span>
+    <span class="product-slug">${escapeHtml(order.product_slug||"No product slug")}</span>
+   </td>
+
    <td>$${escapeHtml(order.amount_usd)}</td>
-   <td>${escapeHtml(order.payment_method||"-")}<br>${escapeHtml(order.payment_currency||"-")}</td>
-   <td>${escapeHtml(submission?.transaction_reference||"Not submitted")}<br><small>${escapeHtml(submission?.review_status||"-")}</small></td>
+
+   <td>
+    ${escapeHtml(order.payment_method||"-")}
+    <br>
+    ${escapeHtml(order.payment_currency||"-")}
+   </td>
+
+   <td>
+    ${escapeHtml(submission?.transaction_reference||"Not submitted")}
+    <br>
+    <small>${escapeHtml(submission?.review_status||"-")}</small>
+   </td>
+
    <td class="status">${escapeHtml(order.status)}</td>
-   <td>${canReview?`<div class="actions">
-    <button data-action="approved" data-id="${escapeHtml(submission.id)}">Approve</button>
-    <button class="reject" data-action="rejected" data-id="${escapeHtml(submission.id)}">Reject</button>
-   </div>`:"-"}</td>
+
+   <td>
+    ${canReview?`<div class="actions">
+     <button data-action="approved" data-id="${escapeHtml(submission.id)}">Approve</button>
+     <button class="reject" data-action="rejected" data-id="${escapeHtml(submission.id)}">Reject</button>
+    </div>`:"-"}
+   </td>
+
   </tr>`;
  }).join("");
 }
@@ -265,7 +359,13 @@ $("ordersBody").addEventListener("click",async event=>{
  if(!button)return;
 
  const decision=button.dataset.action;
- const note=prompt(decision==="approved"?"Optional approval note:":"Reason for rejecting this payment:");
+
+ const note=prompt(
+  decision==="approved"
+   ?"Optional approval note:"
+   :"Reason for rejecting this payment:"
+ );
+
  if(note===null)return;
 
  if(decision==="rejected"&&!note.trim()) {
@@ -287,8 +387,10 @@ $("ordersBody").addEventListener("click",async event=>{
     admin_note:note
    })
   });
+
   showMessage(result.message||"Decision saved.");
   await loadOrders();
+
  } catch(error) {
   showMessage(error.message,true);
   button.disabled=false;
@@ -300,7 +402,9 @@ $("refreshButton").addEventListener("click",loadOrders);
 
 $("logoutButton").addEventListener("click",async()=>{
  await supabaseClient.auth.signOut();
+
  currentSession=null;
+
  $("dashboard").classList.add("hidden");
  $("loginPanel").classList.remove("hidden");
  $("password").value="";
