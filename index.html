@@ -117,12 +117,17 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 .payment-instructions{border:1px solid var(--border);background:#080909;padding:16px;margin-top:15px;overflow-wrap:anywhere}
 .payment-instructions p{font-size:12px;color:var(--muted);margin:7px 0;line-height:1.8}
 .payment-instructions strong{color:white}
+.payment-value-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0;flex-wrap:wrap}
+.payment-value{font-size:clamp(19px,4vw,25px);font-weight:700;line-height:1.45;color:var(--lime);overflow-wrap:anywhere;word-break:break-all}
+.copy-btn{flex-shrink:0;border:1px solid var(--lime);background:transparent;color:var(--lime);padding:10px 13px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.copy-btn:hover{background:var(--lime);color:#080909}
+.copy-feedback{font-size:11px;color:var(--lime);min-height:16px}
 .countdown{font-size:25px;font-weight:700;color:var(--lime);margin-top:8px}
 .error-message{color:#ff8e8e;font-size:12px;margin-top:12px;line-height:1.6}
 .success-message{color:var(--lime);font-size:12px;margin-top:12px;line-height:1.6}
 .hidden{display:none!important}
 @media(max-width:800px){.hero-grid,.about-grid,.product-card{grid-template-columns:1fr}.hero-grid{gap:35px}.product-info{padding:30px}.book-side{min-height:370px}.nav-links{gap:15px}}
-@media(max-width:560px){.nav{min-height:66px}.logo{font-size:18px}.nav-links{display:none;position:absolute;top:66px;left:0;right:0;padding:20px 5%;background:#080909;border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start}.nav-links.show{display:flex}.menu-toggle{display:block}.nav .nav-cta{display:none}.hero-grid{padding:55px 0}h1{letter-spacing:-1px}section.content{padding:70px 0}.ticker-row{display:grid;grid-template-columns:1fr 1fr}.preview-page{min-height:390px;padding:25px}.modal-card{padding:22px}.footer-top,.footer-bottom{flex-direction:column}}
+@media(max-width:560px){.nav{min-height:66px}.logo{font-size:18px}.nav-links{display:none;position:absolute;top:66px;left:0;right:0;padding:20px 5%;background:#080909;border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start}.nav-links.show{display:flex}.menu-toggle{display:block}.nav .nav-cta{display:none}.hero-grid{padding:55px 0}h1{letter-spacing:-1px}section.content{padding:70px 0}.ticker-row{display:grid;grid-template-columns:1fr 1fr}.preview-page{min-height:390px;padding:25px}.modal-card{padding:22px}.footer-top,.footer-bottom{flex-direction:column}.payment-value-row{align-items:flex-start}.payment-value{font-size:19px}}
 </style>
 </head>
 
@@ -321,21 +326,29 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 <p>Order ID: <strong id="createdOrderId"></strong></p>
 <p>Email: <strong id="createdEmail"></strong></p>
 <p>Payment method: <strong id="createdMethod"></strong></p>
-<p>Amount: <strong>$0.50 USD</strong></p>
+<p>Amount: <strong id="createdAmount">$0.50 USD</strong></p>
 <p>Time remaining:</p>
 <div class="countdown" id="paymentCountdown">30:00</div>
 </div>
 
 <div class="payment-instructions" id="cryptoInstructions">
 <p><strong>BNB Chain payment address</strong></p>
-<p id="walletAddress">0xf29D44F02a4cBD41e96718ed95183C9083D264a2</p>
+<div class="payment-value-row">
+<div class="payment-value" id="walletAddress">0xf29D44F02a4cBD41e96718ed95183C9083D264a2</div>
+<button type="button" class="copy-btn" id="copyWallet">COPY ADDRESS</button>
+</div>
+<p class="copy-feedback" id="walletCopyFeedback"></p>
 <p>Selected currency: <strong id="createdCurrency"></strong></p>
-<p>Send only the selected currency to this address on BNB Chain. Confirm the correct amount equivalent to $0.50 before sending.</p>
+<p id="cryptoAmountNote">Send only the selected currency to this address on BNB Chain. Confirm the correct amount before sending.</p>
 </div>
 
 <div class="payment-instructions hidden" id="binanceInstructions">
 <p><strong>Binance Pay UID</strong></p>
-<p>484951385</p>
+<div class="payment-value-row">
+<div class="payment-value" id="binanceUid">484951385</div>
+<button type="button" class="copy-btn" id="copyBinanceUid">COPY UID</button>
+</div>
+<p class="copy-feedback" id="uidCopyFeedback"></p>
 <p>Send exactly $0.50 USD through Binance Pay. Verify the recipient UID before confirming.</p>
 </div>
 
@@ -387,8 +400,6 @@ let customerEmail="";
 let countdownInterval=null;
 let paymentExpiry=null;
 let currentOrder=null;
-let selectedMethod="";
-let selectedCurrency="";
 
 function openModal(){
 $("checkoutModal").classList.add("open");
@@ -427,6 +438,48 @@ $("paymentMethodNote").textContent=method==="crypto"
 ?"You will receive the Binance Pay UID after creating your order."
 :"Choose a payment method to see the available payment options.";
 });
+
+async function copyPaymentValue(value,feedbackId,buttonId,originalLabel){
+const button=$(buttonId);
+const feedback=$(feedbackId);
+try{
+if(navigator.clipboard&&window.isSecureContext){
+await navigator.clipboard.writeText(value);
+}else{
+const temp=document.createElement("textarea");
+temp.value=value;
+temp.style.position="fixed";
+temp.style.opacity="0";
+document.body.appendChild(temp);
+temp.select();
+const copied=document.execCommand("copy");
+temp.remove();
+if(!copied)throw new Error("Copy failed");
+}
+button.textContent="COPIED ✓";
+feedback.textContent="Copied successfully.";
+setTimeout(()=>{
+button.textContent=originalLabel;
+feedback.textContent="";
+},2200);
+}catch(error){
+feedback.textContent="Copy unavailable. Press and hold the value to copy it manually.";
+}
+}
+
+$("copyWallet").addEventListener("click",()=>copyPaymentValue(
+$("walletAddress").textContent.trim(),
+"walletCopyFeedback",
+"copyWallet",
+"COPY ADDRESS"
+));
+
+$("copyBinanceUid").addEventListener("click",()=>copyPaymentValue(
+$("binanceUid").textContent.trim(),
+"uidCopyFeedback",
+"copyBinanceUid",
+"COPY UID"
+));
 
 function startCountdown(expiry){
 if(countdownInterval)clearInterval(countdownInterval);
@@ -499,15 +552,31 @@ payment_method:method,
 payment_currency:currency
 };
 
-selectedMethod=method;
-selectedCurrency=currency;
-
 $("createdOrderId").textContent=result.order_id;
 $("createdEmail").textContent=result.email||customerEmail;
 $("createdMethod").textContent=method==="crypto"?"Crypto — "+currency:"Binance Pay";
 $("createdCurrency").textContent=currency;
+
+if(method==="crypto"&&currency==="BNB"){
+$("createdAmount").textContent="0.0007 BNB";
+$("cryptoAmountNote").textContent="Send exactly 0.0007 BNB to this address on BNB Chain. Do not send another currency.";
+}else if(method==="crypto"&&currency==="USDT"){
+$("createdAmount").textContent="$0.50 USD equivalent in USDT";
+$("cryptoAmountNote").textContent="Send the USDT equivalent of $0.50 to this address on BNB Chain. Confirm the amount before sending.";
+}else if(method==="crypto"&&currency==="USDC"){
+$("createdAmount").textContent="$0.50 USD equivalent in USDC";
+$("cryptoAmountNote").textContent="Send the USDC equivalent of $0.50 to this address on BNB Chain. Confirm the amount before sending.";
+}else{
+$("createdAmount").textContent="$0.50 USD";
+}
+
 $("cryptoInstructions").classList.toggle("hidden",method!=="crypto");
 $("binanceInstructions").classList.toggle("hidden",method!=="binance_pay");
+
+$("walletCopyFeedback").textContent="";
+$("uidCopyFeedback").textContent="";
+$("copyWallet").textContent="COPY ADDRESS";
+$("copyBinanceUid").textContent="COPY UID";
 
 $("transactionReference").value="";
 $("transactionReference").disabled=false;
