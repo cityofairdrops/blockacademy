@@ -126,8 +126,14 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 .error-message{color:#ff8e8e;font-size:12px;margin-top:12px;line-height:1.6}
 .success-message{color:var(--lime);font-size:12px;margin-top:12px;line-height:1.6}
 .hidden{display:none!important}
+.tracking-box{border-top:1px solid var(--border);margin-top:30px;padding-top:25px}
+.tracking-form{display:flex;gap:10px;flex-wrap:wrap;max-width:550px;margin-top:15px}
+.tracking-form input{flex:1;min-width:220px;padding:13px;background:#080909;border:1px solid #3a403a;color:white;outline:none}
+.tracking-result{background:#080909;border:1px solid var(--border);padding:18px;margin-top:15px;max-width:550px}
+.tracking-result p{font-size:13px;color:var(--muted);margin:8px 0;overflow-wrap:anywhere}
+.tracking-result strong{color:white}
 @media(max-width:800px){.hero-grid,.about-grid,.product-card{grid-template-columns:1fr}.hero-grid{gap:35px}.product-info{padding:30px}.book-side{min-height:370px}.nav-links{gap:15px}}
-@media(max-width:560px){.nav{min-height:66px}.logo{font-size:18px}.nav-links{display:none;position:absolute;top:66px;left:0;right:0;padding:20px 5%;background:#080909;border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start}.nav-links.show{display:flex}.menu-toggle{display:block}.nav .nav-cta{display:none}.hero-grid{padding:55px 0}h1{letter-spacing:-1px}section.content{padding:70px 0}.ticker-row{display:grid;grid-template-columns:1fr 1fr}.preview-page{min-height:390px;padding:25px}.modal-card{padding:22px}.footer-top,.footer-bottom{flex-direction:column}.payment-value-row{align-items:flex-start}.payment-value{font-size:19px}}
+@media(max-width:560px){.nav{min-height:66px}.logo{font-size:18px}.nav-links{display:none;position:absolute;top:66px;left:0;right:0;padding:20px 5%;background:#080909;border-bottom:1px solid var(--border);flex-direction:column;align-items:flex-start}.nav-links.show{display:flex}.menu-toggle{display:block}.nav .nav-cta{display:none}.hero-grid{padding:55px 0}h1{letter-spacing:-1px}section.content{padding:70px 0}.ticker-row{display:grid;grid-template-columns:1fr 1fr}.preview-page{min-height:390px;padding:25px}.modal-card{padding:22px}.footer-top,.footer-bottom{flex-direction:column}.payment-value-row{align-items:flex-start}.payment-value{font-size:19px}.tracking-form{flex-direction:column}.tracking-form input{min-width:0;width:100%}.tracking-form button{width:100%}}
 </style>
 </head>
 
@@ -136,7 +142,7 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 <div class="container nav">
 <a class="logo" href="#">BLOCK <span>ACADEMY</span></a>
 <nav class="nav-links" id="navLinks">
-<a href="#about">About</a><a href="#guides">Guides</a><a href="#preview">Preview</a><a href="#reviews">Reviews</a>
+<a href="#about">About</a><a href="#guides">Guides</a><a href="#preview">Preview</a><a href="#reviews">Reviews</a><a href="#orderTracking">Track Order</a>
 </nav>
 <button class="menu-toggle" id="menuToggle" aria-label="Open navigation">☰</button>
 <a href="#guides" class="btn btn-small nav-cta">EXPLORE GUIDES ↗</a>
@@ -268,16 +274,31 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 </section>
 </main>
 
-<footer><div class="container">
+<footer>
+<div class="container">
 <div class="footer-top">
 <a class="logo" href="#">BLOCK <span>ACADEMY</span></a>
 <div class="footer-links"><a href="#about">About</a><a href="#guides">Publications</a><a href="#reviews">Reviews</a><a href="mailto:blockacademyusa@gmail.com">Contact</a></div>
 </div>
+
+<div class="tracking-box" id="orderTracking">
+<div class="eyebrow">ORDER TRACKING</div>
+<h3 style="font-size:22px;margin:10px 0">Track your order</h3>
+<p class="muted" style="font-size:13px">Enter your Order ID to check its current status.</p>
+<form class="tracking-form" id="trackingForm">
+<input id="trackingOrderId" type="text" placeholder="Enter your Order ID" autocomplete="off" required>
+<button class="btn" id="trackOrderButton" type="submit">TRACK ORDER</button>
+</form>
+<p id="trackingMessage" class="error-message" role="status"></p>
+<div id="trackingResult" class="tracking-result hidden"></div>
+</div>
+
 <div class="footer-bottom">
 <div>© <span id="year"></span> Block Academy</div>
 <p class="disclaimer">Educational content only. Nothing published by Block Academy constitutes financial, investment or trading advice. Trading involves risk, including the possible loss of capital.</p>
 </div>
-</div></footer>
+</div>
+</footer>
 
 <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
 <div class="modal-card">
@@ -287,7 +308,7 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 </div>
 
 <div id="stepEmail">
-<p class="modal-copy">Enter your email address to begin creating your order.</p>
+<p class="modal-copy">Enter your email address to begin creating or restoring your order.</p>
 <form id="emailForm">
 <label for="customerEmail">Email address</label>
 <input id="customerEmail" type="email" placeholder="you@example.com" required autocomplete="email">
@@ -303,7 +324,6 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 <option value="crypto">Crypto wallet — BNB Chain</option>
 <option value="binance_pay">Binance Pay</option>
 </select>
-
 <div id="cryptoCurrencyWrap" class="hidden">
 <label for="paymentCurrency">Payment currency</label>
 <select id="paymentCurrency">
@@ -314,15 +334,17 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 </select>
 </div>
 <p id="paymentMethodNote" class="modal-copy">Choose a payment method to see the available payment options.</p>
-<button class="btn" id="methodContinue">CREATE ORDER →</button>
+<button class="btn" id="methodContinue">CREATE / RESTORE ORDER →</button>
 <p id="createOrderError" class="error-message hidden"></p>
 </div>
 
 <div id="stepCreated" class="hidden">
-<div class="eyebrow">Order Created</div>
-<h3 style="font-size:25px;margin:12px 0;">Complete your payment</h3>
+<div class="eyebrow" id="orderHeading">ORDER CREATED</div>
+<h3 style="font-size:25px;margin:12px 0" id="paymentHeading">Complete your payment</h3>
+<p id="restoreNotice" class="success-message hidden"></p>
+
 <div class="status-panel">
-<div class="status-label">PAYMENT WINDOW — 30 MINUTES</div>
+<div class="status-label" id="orderStatusLabel">PAYMENT WINDOW — 30 MINUTES</div>
 <p>Order ID: <strong id="createdOrderId"></strong></p>
 <p>Email: <strong id="createdEmail"></strong></p>
 <p>Payment method: <strong id="createdMethod"></strong></p>
@@ -361,7 +383,12 @@ footer{border-top:1px solid var(--border);padding:35px 0}
 <p id="referenceMessage" class="error-message"></p>
 </div>
 
-<div class="warning">
+<div class="status-panel hidden" id="submittedNotice">
+<div class="status-label">PAYMENT REFERENCE RECEIVED</div>
+<p>Your payment reference has already been submitted. Your order is awaiting administrator review. You do not need to submit it again.</p>
+</div>
+
+<div class="warning" id="paymentWarning">
 Payment is manually reviewed by the administrator. Submitting a reference does not mean payment has been verified. Do not submit until you have actually sent the payment.
 </div>
 <p class="modal-copy" id="expiryMessage">Your payment window expires 30 minutes after order creation.</p>
@@ -385,11 +412,11 @@ const previewPages = [
 
 let previewIndex = 0;
 function renderPreview(){
-const page=previewPages[previewIndex];
-$("previewPage").innerHTML=`<small>${page.kicker}</small><div><h3>${page.title}</h3><p>${page.body}</p></div><div class="page-bottom"><span>${page.footer}</span><span>0${previewIndex+1}</span></div>`;
-$("previewCounter").textContent=`Preview page ${previewIndex+1} of ${previewPages.length}`;
-$("prevPage").disabled=previewIndex===0;
-$("nextPage").disabled=previewIndex===previewPages.length-1;
+  const page=previewPages[previewIndex];
+  $("previewPage").innerHTML=`<small>${page.kicker}</small><div><h3>${page.title}</h3><p>${page.body}</p></div><div class="page-bottom"><span>${page.footer}</span><span>0${previewIndex+1}</span></div>`;
+  $("previewCounter").textContent=`Preview page ${previewIndex+1} of ${previewPages.length}`;
+  $("prevPage").disabled=previewIndex===0;
+  $("nextPage").disabled=previewIndex===previewPages.length-1;
 }
 $("prevPage").addEventListener("click",()=>{if(previewIndex>0)previewIndex--;renderPreview()});
 $("nextPage").addEventListener("click",()=>{if(previewIndex<previewPages.length-1)previewIndex++;renderPreview()});
@@ -402,20 +429,20 @@ let paymentExpiry=null;
 let currentOrder=null;
 
 function openModal(){
-$("checkoutModal").classList.add("open");
-document.body.classList.add("modal-open");
-showStep("stepEmail","STEP 01 / EMAIL","Get the guide");
-$("createOrderError").classList.add("hidden");
+  $("checkoutModal").classList.add("open");
+  document.body.classList.add("modal-open");
+  showStep("stepEmail","STEP 01 / EMAIL","Get the guide");
+  $("createOrderError").classList.add("hidden");
 }
 function closeModal(){
-$("checkoutModal").classList.remove("open");
-document.body.classList.remove("modal-open");
+  $("checkoutModal").classList.remove("open");
+  document.body.classList.remove("modal-open");
 }
 function showStep(id,indicator,title){
-["stepEmail","stepMethod","stepCreated"].forEach(step=>$(step).classList.add("hidden"));
-$(id).classList.remove("hidden");
-$("stepIndicator").textContent=indicator;
-$("checkoutTitle").textContent=title;
+  ["stepEmail","stepMethod","stepCreated"].forEach(step=>$(step).classList.add("hidden"));
+  $(id).classList.remove("hidden");
+  $("stepIndicator").textContent=indicator;
+  $("checkoutTitle").textContent=title;
 }
 $("buyOpen").addEventListener("click",openModal);
 $("ctaBuy").addEventListener("click",openModal);
@@ -423,239 +450,342 @@ document.querySelectorAll("[data-close]").forEach(button=>button.addEventListene
 $("checkoutModal").addEventListener("click",event=>{if(event.target===$("checkoutModal"))closeModal()});
 
 $("emailForm").addEventListener("submit",event=>{
-event.preventDefault();
-customerEmail=$("customerEmail").value.trim().toLowerCase();
-if(!customerEmail)return;
-showStep("stepMethod","STEP 02 / PAYMENT METHOD","Choose payment");
+  event.preventDefault();
+  customerEmail=$("customerEmail").value.trim().toLowerCase();
+  if(!customerEmail)return;
+  showStep("stepMethod","STEP 02 / PAYMENT METHOD","Choose payment");
 });
 
 $("paymentMethod").addEventListener("change",()=>{
-const method=$("paymentMethod").value;
-$("cryptoCurrencyWrap").classList.toggle("hidden",method!=="crypto");
-$("paymentMethodNote").textContent=method==="crypto"
-?"Choose BNB, USDT BEP-20 or USDC BEP-20. Use the BNB Chain wallet shown after order creation."
-:method==="binance_pay"
-?"You will receive the Binance Pay UID after creating your order."
-:"Choose a payment method to see the available payment options.";
+  const method=$("paymentMethod").value;
+  $("cryptoCurrencyWrap").classList.toggle("hidden",method!=="crypto");
+  $("paymentMethodNote").textContent=method==="crypto"
+    ?"Choose BNB, USDT BEP-20 or USDC BEP-20. All three use the same Crypto order category."
+    :method==="binance_pay"
+    ?"You will receive the Binance Pay UID after creating or restoring your order."
+    :"Choose a payment method to see the available payment options.";
 });
 
 async function copyPaymentValue(value,feedbackId,buttonId,originalLabel){
-const button=$(buttonId);
-const feedback=$(feedbackId);
-try{
-if(navigator.clipboard&&window.isSecureContext){
-await navigator.clipboard.writeText(value);
-}else{
-const temp=document.createElement("textarea");
-temp.value=value;
-temp.style.position="fixed";
-temp.style.opacity="0";
-document.body.appendChild(temp);
-temp.select();
-const copied=document.execCommand("copy");
-temp.remove();
-if(!copied)throw new Error("Copy failed");
-}
-button.textContent="COPIED ✓";
-feedback.textContent="Copied successfully.";
-setTimeout(()=>{
-button.textContent=originalLabel;
-feedback.textContent="";
-},2200);
-}catch(error){
-feedback.textContent="Copy unavailable. Press and hold the value to copy it manually.";
-}
+  const button=$(buttonId);
+  const feedback=$(feedbackId);
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      await navigator.clipboard.writeText(value);
+    }else{
+      const temp=document.createElement("textarea");
+      temp.value=value;
+      temp.style.position="fixed";
+      temp.style.opacity="0";
+      document.body.appendChild(temp);
+      temp.select();
+      const copied=document.execCommand("copy");
+      temp.remove();
+      if(!copied)throw new Error("Copy failed");
+    }
+    button.textContent="COPIED ✓";
+    feedback.textContent="Copied successfully.";
+    setTimeout(()=>{
+      button.textContent=originalLabel;
+      feedback.textContent="";
+    },2200);
+  }catch(error){
+    feedback.textContent="Copy unavailable. Press and hold the value to copy it manually.";
+  }
 }
 
 $("copyWallet").addEventListener("click",()=>copyPaymentValue(
-$("walletAddress").textContent.trim(),
-"walletCopyFeedback",
-"copyWallet",
-"COPY ADDRESS"
+  $("walletAddress").textContent.trim(),"walletCopyFeedback","copyWallet","COPY ADDRESS"
 ));
-
 $("copyBinanceUid").addEventListener("click",()=>copyPaymentValue(
-$("binanceUid").textContent.trim(),
-"uidCopyFeedback",
-"copyBinanceUid",
-"COPY UID"
+  $("binanceUid").textContent.trim(),"uidCopyFeedback","copyBinanceUid","COPY UID"
 ));
 
 function startCountdown(expiry){
-if(countdownInterval)clearInterval(countdownInterval);
-paymentExpiry=new Date(expiry).getTime();
+  if(countdownInterval)clearInterval(countdownInterval);
+  paymentExpiry=new Date(expiry).getTime();
 
-function update(){
-const remaining=Math.max(0,paymentExpiry-Date.now());
-const minutes=Math.floor(remaining/60000);
-const seconds=Math.floor((remaining%60000)/1000);
-$("paymentCountdown").textContent=String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0");
+  function update(){
+    const remaining=Math.max(0,paymentExpiry-Date.now());
+    const minutes=Math.floor(remaining/60000);
+    const seconds=Math.floor((remaining%60000)/1000);
+    $("paymentCountdown").textContent=String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0");
 
-if(remaining<=0){
-clearInterval(countdownInterval);
-$("paymentCountdown").textContent="EXPIRED";
-$("expiryMessage").textContent="This payment window has expired. Do not send payment for this order.";
-$("submitPayment").disabled=true;
-$("transactionReference").disabled=true;
+    if(remaining<=0){
+      clearInterval(countdownInterval);
+      $("paymentCountdown").textContent="EXPIRED";
+      $("expiryMessage").textContent="This payment window has expired. Do not send payment for this order.";
+      $("submitPayment").disabled=true;
+      $("transactionReference").disabled=true;
+    }
+  }
+  update();
+  countdownInterval=setInterval(update,1000);
 }
-}
-update();
-countdownInterval=setInterval(update,1000);
+
+function displayOrder(result){
+  currentOrder={
+    order_id:result.order_id,
+    tracking_token:result.tracking_token,
+    payment_method:result.payment_method,
+    payment_currency:result.payment_currency
+  };
+
+  const method=result.payment_method;
+  const currency=result.payment_currency;
+  const alreadySubmitted=result.status==="payment_submitted";
+
+  $("createdOrderId").textContent=result.order_id;
+  $("createdEmail").textContent=result.email||customerEmail;
+  $("createdMethod").textContent=method==="crypto"?"Crypto — "+currency:"Binance Pay";
+  $("createdCurrency").textContent=currency;
+
+  if(method==="crypto"&&currency==="BNB"){
+    $("createdAmount").textContent="0.0007 BNB";
+    $("cryptoAmountNote").textContent="Send exactly 0.0007 BNB to this address on BNB Chain. Do not send another currency.";
+  }else if(method==="crypto"&&currency==="USDT"){
+    $("createdAmount").textContent="$0.50 USD equivalent in USDT";
+    $("cryptoAmountNote").textContent="Send the USDT equivalent of $0.50 to this address on BNB Chain. Confirm the amount before sending.";
+  }else if(method==="crypto"&&currency==="USDC"){
+    $("createdAmount").textContent="$0.50 USD equivalent in USDC";
+    $("cryptoAmountNote").textContent="Send the USDC equivalent of $0.50 to this address on BNB Chain. Confirm the amount before sending.";
+  }else{
+    $("createdAmount").textContent="$0.50 USD";
+  }
+
+  $("cryptoInstructions").classList.toggle("hidden",method!=="crypto");
+  $("binanceInstructions").classList.toggle("hidden",method!=="binance_pay");
+
+  $("walletCopyFeedback").textContent="";
+  $("uidCopyFeedback").textContent="";
+  $("copyWallet").textContent="COPY ADDRESS";
+  $("copyBinanceUid").textContent="COPY UID";
+
+  $("transactionReference").value="";
+  $("transactionReference").disabled=alreadySubmitted;
+  $("submitPayment").disabled=alreadySubmitted;
+  $("submitPayment").textContent=alreadySubmitted?"REFERENCE SUBMITTED":"SUBMIT PAYMENT REFERENCE →";
+  $("referenceMessage").textContent="";
+  $("referenceMessage").className="error-message";
+
+  $("referenceForm").classList.toggle("hidden",alreadySubmitted);
+  $("submittedNotice").classList.toggle("hidden",!alreadySubmitted);
+  $("paymentWarning").classList.toggle("hidden",alreadySubmitted);
+
+  if(alreadySubmitted){
+    $("orderHeading").textContent="PAYMENT SUBMITTED";
+    $("paymentHeading").textContent="Awaiting administrator review";
+    $("orderStatusLabel").textContent="PAYMENT REFERENCE RECEIVED";
+    $("restoreNotice").classList.add("hidden");
+  }else{
+    $("orderHeading").textContent=result.reused?"EXISTING ORDER RESTORED":"ORDER CREATED";
+    $("paymentHeading").textContent="Complete your payment";
+    $("orderStatusLabel").textContent="PAYMENT WINDOW — 30 MINUTES";
+    $("restoreNotice").textContent=result.reused
+      ?"Your existing active order has been restored. Your original Order ID and countdown are unchanged."
+      :"Your order has been created. Complete payment before the timer expires.";
+    $("restoreNotice").classList.remove("hidden");
+  }
+
+  $("expiryMessage").textContent="Your payment window expires 30 minutes after the original order creation time.";
+  startCountdown(result.payment_expires_at);
+  showStep("stepCreated","STEP 03 / PAYMENT","Your order");
 }
 
 $("methodContinue").addEventListener("click",async()=>{
-const method=$("paymentMethod").value;
-const currency=method==="crypto"?$("paymentCurrency").value:"BINANCE_PAY";
+  const method=$("paymentMethod").value;
+  const currency=method==="crypto"?$("paymentCurrency").value:"BINANCE_PAY";
 
-if(!method){
-$("createOrderError").textContent="Please select a payment method.";
-$("createOrderError").classList.remove("hidden");
-return;
-}
-if(method==="crypto"&&!currency){
-$("createOrderError").textContent="Please select a cryptocurrency.";
-$("createOrderError").classList.remove("hidden");
-return;
-}
+  if(!method){
+    $("createOrderError").textContent="Please select a payment method.";
+    $("createOrderError").classList.remove("hidden");
+    return;
+  }
+  if(method==="crypto"&&!currency){
+    $("createOrderError").textContent="Please select a cryptocurrency.";
+    $("createOrderError").classList.remove("hidden");
+    return;
+  }
 
-const button=$("methodContinue");
-button.disabled=true;
-button.textContent="CREATING ORDER...";
-$("createOrderError").classList.add("hidden");
+  const button=$("methodContinue");
+  button.disabled=true;
+  button.textContent="CREATING / RESTORING...";
+  $("createOrderError").classList.add("hidden");
 
-try{
-const response=await fetch("/api/create-order",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-email:customerEmail,
-payment_method:method,
-payment_currency:currency,
-product_slug:"trading-guide-weather-markets"
-})
-});
+  try{
+    const response=await fetch("/api/create-order",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        email:customerEmail,
+        payment_method:method,
+        payment_currency:currency,
+        product_slug:"trading-guide-weather-markets"
+      })
+    });
 
-const result=await response.json();
+    const result=await response.json();
 
-if(!response.ok||!result.success){
-throw new Error(result.error||"Could not create your order. Please try again.");
-}
+    if(!response.ok||!result.success){
+      throw new Error(result.error||"Could not create or restore your order. Please try again.");
+    }
+    if(!result.order_id||!result.tracking_token||!result.payment_expires_at){
+      throw new Error("The server response is missing required order information.");
+    }
 
-if(!result.order_id||!result.tracking_token||!result.payment_expires_at){
-throw new Error("The server response is missing required order information.");
-}
+    displayOrder(result);
 
-currentOrder={
-order_id:result.order_id,
-tracking_token:result.tracking_token,
-payment_method:method,
-payment_currency:currency
-};
-
-$("createdOrderId").textContent=result.order_id;
-$("createdEmail").textContent=result.email||customerEmail;
-$("createdMethod").textContent=method==="crypto"?"Crypto — "+currency:"Binance Pay";
-$("createdCurrency").textContent=currency;
-
-if(method==="crypto"&&currency==="BNB"){
-$("createdAmount").textContent="0.0007 BNB";
-$("cryptoAmountNote").textContent="Send exactly 0.0007 BNB to this address on BNB Chain. Do not send another currency.";
-}else if(method==="crypto"&&currency==="USDT"){
-$("createdAmount").textContent="$0.50 USD equivalent in USDT";
-$("cryptoAmountNote").textContent="Send the USDT equivalent of $0.50 to this address on BNB Chain. Confirm the amount before sending.";
-}else if(method==="crypto"&&currency==="USDC"){
-$("createdAmount").textContent="$0.50 USD equivalent in USDC";
-$("cryptoAmountNote").textContent="Send the USDC equivalent of $0.50 to this address on BNB Chain. Confirm the amount before sending.";
-}else{
-$("createdAmount").textContent="$0.50 USD";
-}
-
-$("cryptoInstructions").classList.toggle("hidden",method!=="crypto");
-$("binanceInstructions").classList.toggle("hidden",method!=="binance_pay");
-
-$("walletCopyFeedback").textContent="";
-$("uidCopyFeedback").textContent="";
-$("copyWallet").textContent="COPY ADDRESS";
-$("copyBinanceUid").textContent="COPY UID";
-
-$("transactionReference").value="";
-$("transactionReference").disabled=false;
-$("submitPayment").disabled=false;
-$("submitPayment").textContent="SUBMIT PAYMENT REFERENCE →";
-$("referenceMessage").textContent="";
-$("referenceMessage").className="error-message";
-
-startCountdown(result.payment_expires_at);
-showStep("stepCreated","STEP 03 / PAYMENT","Complete your payment");
-
-}catch(error){
-$("createOrderError").textContent=error.message||"Something went wrong. Please try again.";
-$("createOrderError").classList.remove("hidden");
-}finally{
-button.disabled=false;
-button.textContent="CREATE ORDER →";
-}
+  }catch(error){
+    $("createOrderError").textContent=error.message||"Something went wrong. Please try again.";
+    $("createOrderError").classList.remove("hidden");
+  }finally{
+    button.disabled=false;
+    button.textContent="CREATE / RESTORE ORDER →";
+  }
 });
 
 $("submitPayment").addEventListener("click",async()=>{
-if(!currentOrder){
-$("referenceMessage").textContent="Order information is missing. Please create a new order.";
-return;
-}
+  if(!currentOrder){
+    $("referenceMessage").textContent="Order information is missing. Please create a new order.";
+    return;
+  }
+  if(Date.now()>=paymentExpiry){
+    $("referenceMessage").textContent="This payment window has expired. Please create a new order.";
+    $("submitPayment").disabled=true;
+    return;
+  }
 
-if(Date.now()>=paymentExpiry){
-$("referenceMessage").textContent="This payment window has expired. Please create a new order.";
-$("submitPayment").disabled=true;
-return;
-}
+  const reference=$("transactionReference").value.trim();
+  if(reference.length<5||reference.length>200){
+    $("referenceMessage").textContent="Enter a valid transaction reference (5–200 characters).";
+    $("referenceMessage").className="error-message";
+    return;
+  }
 
-const reference=$("transactionReference").value.trim();
+  const button=$("submitPayment");
+  button.disabled=true;
+  button.textContent="SUBMITTING...";
+  $("referenceMessage").textContent="";
+  $("referenceMessage").className="error-message";
 
-if(reference.length<5||reference.length>200){
-$("referenceMessage").textContent="Enter a valid transaction reference (5–200 characters).";
-$("referenceMessage").className="error-message";
-return;
-}
+  try{
+    const response=await fetch("/api/submit-payment",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        order_id:currentOrder.order_id,
+        tracking_token:currentOrder.tracking_token,
+        payment_method:currentOrder.payment_method,
+        payment_currency:currentOrder.payment_currency,
+        transaction_reference:reference
+      })
+    });
 
-const button=$("submitPayment");
-button.disabled=true;
-button.textContent="SUBMITTING...";
-$("referenceMessage").textContent="";
-$("referenceMessage").className="error-message";
+    const result=await response.json();
+    if(!response.ok||!result.success){
+      throw new Error(result.error||"Could not submit payment reference.");
+    }
 
-try{
-const response=await fetch("/api/submit-payment",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-order_id:currentOrder.order_id,
-tracking_token:currentOrder.tracking_token,
-payment_method:currentOrder.payment_method,
-payment_currency:currentOrder.payment_currency,
-transaction_reference:reference
-})
-});
-
-const result=await response.json();
-
-if(!response.ok||!result.success){
-throw new Error(result.error||"Could not submit payment reference.");
-}
-
-$("referenceMessage").textContent="Payment reference submitted successfully. Your payment is now awaiting administrator review.";
-$("referenceMessage").className="success-message";
-button.textContent="REFERENCE SUBMITTED";
-$("transactionReference").disabled=true;
-
-}catch(error){
-$("referenceMessage").textContent=error.message||"Submission failed. Please try again.";
-$("referenceMessage").className="error-message";
-button.disabled=false;
-button.textContent="SUBMIT PAYMENT REFERENCE →";
-}
+    $("referenceForm").classList.add("hidden");
+    $("submittedNotice").classList.remove("hidden");
+    $("paymentWarning").classList.add("hidden");
+    $("orderHeading").textContent="PAYMENT SUBMITTED";
+    $("paymentHeading").textContent="Awaiting administrator review";
+    $("orderStatusLabel").textContent="PAYMENT REFERENCE RECEIVED";
+  }catch(error){
+    $("referenceMessage").textContent=error.message||"Submission failed. Please try again.";
+    $("referenceMessage").className="error-message";
+    button.disabled=false;
+    button.textContent="SUBMIT PAYMENT REFERENCE →";
+  }
 });
 
 $("backToSite").addEventListener("click",closeModal);
+
+/* PUBLIC ORDER TRACKING — Order ID only */
+$("trackingForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+
+  const orderId=$("trackingOrderId").value.trim();
+  const button=$("trackOrderButton");
+  const message=$("trackingMessage");
+  const resultBox=$("trackingResult");
+
+  if(!orderId){
+    message.textContent="Please enter your Order ID.";
+    resultBox.classList.add("hidden");
+    return;
+  }
+
+  button.disabled=true;
+  button.textContent="SEARCHING...";
+  message.textContent="";
+  resultBox.classList.add("hidden");
+
+  try{
+    const response=await fetch("/api/track-order",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({order_id:orderId})
+    });
+
+    const data=await response.json();
+
+    if(!response.ok||!data.success||!data.order){
+      throw new Error(data.error||"Order could not be found.");
+    }
+
+    const order=data.order;
+    const statusLabels={
+      awaiting_payment:"Awaiting payment",
+      payment_submitted:"Payment submitted — awaiting review",
+      approved:"Payment approved",
+      rejected:"Payment rejected",
+      completed:"Completed"
+    };
+
+    const expiry=order.payment_expires_at?new Date(order.payment_expires_at):null;
+    const expired=expiry&&expiry.getTime()<=Date.now()&&order.status==="awaiting_payment";
+
+    let statusText=statusLabels[order.status]||order.status;
+    if(expired)statusText="Payment window expired";
+
+    const method=order.payment_method==="crypto"
+      ?"Crypto — "+(order.payment_currency||"")
+      :"Binance Pay";
+
+    resultBox.innerHTML="";
+    const rows=[
+      ["Order ID",order.order_id],
+      ["Product",order.product_title],
+      ["Amount","$"+Number(order.amount_usd).toFixed(2)+" USD"],
+      ["Payment method",method],
+      ["Status",statusText],
+      ["Created",order.created_at?new Date(order.created_at).toLocaleString():"—"]
+    ];
+
+    if(order.approved_at)rows.push(["Approved",new Date(order.approved_at).toLocaleString()]);
+    if(order.completed_at)rows.push(["Completed",new Date(order.completed_at).toLocaleString()]);
+    if(order.status==="awaiting_payment"&&expiry)rows.push(["Payment deadline",expiry.toLocaleString()]);
+
+    rows.forEach(([label,value])=>{
+      const p=document.createElement("p");
+      const strong=document.createElement("strong");
+      strong.textContent=label+": ";
+      p.appendChild(strong);
+      p.appendChild(document.createTextNode(value||"—"));
+      resultBox.appendChild(p);
+    });
+
+    resultBox.classList.remove("hidden");
+
+  }catch(error){
+    message.textContent=error.message||"Unable to track this order right now.";
+  }finally{
+    button.disabled=false;
+    button.textContent="TRACK ORDER";
+  }
+});
 </script>
 </body>
 </html>
