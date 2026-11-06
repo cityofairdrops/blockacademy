@@ -33,6 +33,7 @@ td{font-size:14px}
 .actions button{padding:8px 10px;font-size:12px}
 .status{color:#c6f36b}
 #message{margin-top:14px;color:#c6f36b}
+#loginMessage{white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:650px){body{padding:15px}.stats{grid-template-columns:repeat(2,1fr)}.panel{padding:15px}}
 </style>
 </head>
@@ -49,9 +50,9 @@ td{font-size:14px}
 <input id="email" type="email" autocomplete="username" required>
 <label>Password</label>
 <input id="password" type="password" autocomplete="current-password" required>
-<button type="submit" id="loginButton" disabled>Loading secure login...</button>
+<button type="submit" id="loginButton" disabled>Connecting...</button>
 </form>
-<p id="loginMessage" class="muted">Connecting to authentication service...</p>
+<p id="loginMessage" class="muted">Initializing secure login...</p>
 </section>
 
 <section id="dashboard" class="hidden">
@@ -88,9 +89,8 @@ td{font-size:14px}
 </section>
 </main>
 
-<script type="module">
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 const $ = id => document.getElementById(id);
 let supabaseClient = null;
 let currentSession = null;
@@ -99,7 +99,7 @@ let allSubmissions = [];
 
 function escapeHtml(value) {
  return String(value ?? "").replace(/[&<>"']/g, c => ({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
  })[c]);
 }
 
@@ -110,14 +110,32 @@ function showMessage(message,error=false) {
 
 async function initialize() {
  try {
+  if(!window.supabase || typeof window.supabase.createClient!=="function") {
+   throw new Error("Supabase library failed to load. Check your internet connection and reload.");
+  }
+
   const response=await fetch("/api/admin-config",{cache:"no-store"});
-  if(!response.ok) throw new Error("Could not load Supabase configuration.");
+  const config=await response.json().catch(()=>({}));
 
-  const config=await response.json();
-  if(!config.supabaseUrl || !config.publishableKey)
-   throw new Error("Supabase configuration is incomplete.");
+  if(!response.ok) {
+   throw new Error(config.error||"Configuration API returned HTTP "+response.status);
+  }
 
-  supabaseClient=createClient(config.supabaseUrl,config.publishableKey);
+  if(!config.supabaseUrl || !config.publishableKey) {
+   throw new Error("Supabase URL or publishable key is missing from the API response.");
+  }
+
+  supabaseClient=window.supabase.createClient(
+   config.supabaseUrl,
+   config.publishableKey,
+   {
+    auth:{
+     persistSession:true,
+     autoRefreshToken:true,
+     detectSessionInUrl:true
+    }
+   }
+  );
 
   const {data,error}=await supabaseClient.auth.getSession();
   if(error) throw error;
@@ -131,7 +149,7 @@ async function initialize() {
    await openDashboard();
   }
  } catch(error) {
-  $("loginMessage").textContent="Connection error: "+error.message;
+  $("loginMessage").textContent="LOGIN INITIALIZATION FAILED:\n"+error.message;
   $("loginButton").disabled=true;
   $("loginButton").textContent="Login unavailable";
  }
@@ -139,22 +157,22 @@ async function initialize() {
 
 $("loginForm").addEventListener("submit",async event=>{
  event.preventDefault();
- if(!supabaseClient) {
-  $("loginMessage").textContent="Authentication is not ready. Refresh the page.";
-  return;
- }
+ if(!supabaseClient)return;
+
  $("loginButton").disabled=true;
  $("loginMessage").textContent="Signing in...";
+
  try {
   const {data,error}=await supabaseClient.auth.signInWithPassword({
    email:$("email").value.trim(),
    password:$("password").value
   });
-  if(error) throw error;
+  if(error)throw error;
+
   currentSession=data.session;
   await openDashboard();
  } catch(error) {
-  $("loginMessage").textContent=error.message;
+  $("loginMessage").textContent="LOGIN FAILED:\n"+error.message;
  } finally {
   $("loginButton").disabled=false;
   $("loginButton").textContent="Sign in";
@@ -163,21 +181,22 @@ $("loginForm").addEventListener("submit",async event=>{
 
 async function apiFetch(path,options={}) {
  const {data,error}=await supabaseClient.auth.getSession();
- if(error) throw error;
- const session=data.session;
- if(!session) throw new Error("Session expired. Please log in again.");
- currentSession=session;
+ if(error)throw error;
+ if(!data.session)throw new Error("Session expired. Please log in again.");
+
+ currentSession=data.session;
 
  const response=await fetch(path,{
   ...options,
   headers:{
    ...(options.headers||{}),
-   Authorization:"Bearer "+session.access_token,
+   Authorization:"Bearer "+currentSession.access_token,
    "Content-Type":"application/json"
   }
  });
+
  const result=await response.json().catch(()=>({}));
- if(!response.ok) throw new Error(result.error||"Request failed");
+ if(!response.ok)throw new Error(result.error||"Request failed: "+response.status);
  return result;
 }
 
@@ -191,14 +210,18 @@ async function openDashboard() {
 async function loadOrders() {
  $("ordersBody").innerHTML='<tr><td colspan="6">Loading orders...</td></tr>';
  showMessage("");
+
  try {
   const result=await apiFetch("/api/admin-orders");
   allOrders=result.orders||[];
   allSubmissions=result.payment_submissions||[];
+
   $("totalOrders").textContent=allOrders.length;
-  $("pendingOrders").textContent=allOrders.filter(o=>["payment_submitted","under_review"].includes(o.status)).length;
+  $("pendingOrders").textContent=allOrders.filter(o=>
+   ["payment_submitted","under_review"].includes(o.status)).length;
   $("approvedOrders").textContent=allOrders.filter(o=>o.status==="approved").length;
   $("completedOrders").textContent=allOrders.filter(o=>o.status==="completed").length;
+
   renderOrders();
  } catch(error) {
   $("ordersBody").innerHTML=`<tr><td colspan="6">${escapeHtml(error.message)}</td></tr>`;
@@ -212,14 +235,17 @@ function renderOrders() {
   (o.email||"").toLowerCase().includes(query)||
   (o.id||"").toLowerCase().includes(query)
  );
+
  if(!filtered.length) {
   $("ordersBody").innerHTML='<tr><td colspan="6">No matching orders.</td></tr>';
   return;
  }
+
  $("ordersBody").innerHTML=filtered.map(order=>{
   const submission=allSubmissions.find(s=>s.order_id===order.id);
   const canReview=submission?.review_status==="pending"&&
    ["payment_submitted","under_review"].includes(order.status);
+
   return `<tr>
    <td><strong>${escapeHtml(order.email)}</strong><br><small>${escapeHtml(order.id)}</small></td>
    <td>$${escapeHtml(order.amount_usd)}</td>
@@ -237,20 +263,29 @@ function renderOrders() {
 $("ordersBody").addEventListener("click",async event=>{
  const button=event.target.closest("button[data-action]");
  if(!button)return;
+
  const decision=button.dataset.action;
  const note=prompt(decision==="approved"?"Optional approval note:":"Reason for rejecting this payment:");
  if(note===null)return;
+
  if(decision==="rejected"&&!note.trim()) {
   alert("Please enter a rejection reason.");
   return;
  }
+
  if(!confirm(`Are you sure you want to ${decision} this payment?`))return;
+
  button.disabled=true;
  showMessage("Saving decision...");
+
  try {
   const result=await apiFetch("/api/admin-review-payment",{
    method:"POST",
-   body:JSON.stringify({submission_id:button.dataset.id,decision,admin_note:note})
+   body:JSON.stringify({
+    submission_id:button.dataset.id,
+    decision,
+    admin_note:note
+   })
   });
   showMessage(result.message||"Decision saved.");
   await loadOrders();
@@ -262,6 +297,7 @@ $("ordersBody").addEventListener("click",async event=>{
 
 $("search").addEventListener("input",renderOrders);
 $("refreshButton").addEventListener("click",loadOrders);
+
 $("logoutButton").addEventListener("click",async()=>{
  await supabaseClient.auth.signOut();
  currentSession=null;
